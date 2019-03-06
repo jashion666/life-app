@@ -6,7 +6,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.PropertySource;
 
 @SpringBootApplication
-@PropertySource("classpath:/spring/dubbo-provider.properties")
+@PropertySource("classpath:/dubbo-provider.properties")
 @EnableDubbo(scanBasePackages = "com.life.app.server.service.impl")
 public class AppServerApplication {
 

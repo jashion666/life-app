@@ -8,12 +8,13 @@ import lombok.extern.slf4j.Slf4j;
  * @author wkh.
  */
 @Slf4j
-@Service(version = "1.0.0",group = "CarServiceImpl")
+@Service(version = "1.0.0", group = "CarServiceImpl")
 @org.springframework.stereotype.Service
 public class CarServiceImpl implements DemoService {
-  @Override
-  public String sayHello(String name) {
-    log.debug("入参================》" + name);
-    return "贾维斯说:" + name;
-  }
+
+    @Override
+    public String sayHello(String name) {
+        log.info("入参================::{name}->" + name);
+        return "贾维斯说:" + name;
+    }
 }
