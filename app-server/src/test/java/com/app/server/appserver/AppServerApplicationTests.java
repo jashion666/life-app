@@ -1,4 +1,4 @@
-package com.life.app.server.appserver;
+package com.app.server.appserver;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;

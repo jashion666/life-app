@@ -1,4 +1,4 @@
-package com.life.app.server.service.impl;
+package com.app.server.service.impl;
 
 import com.alibaba.dubbo.config.annotation.Service;
 import com.life.app.service.DemoService;
