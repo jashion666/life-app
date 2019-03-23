@@ -127,4 +127,23 @@ public class RedisClientImpl implements RedisClient {
         return redisTemplate.opsForValue().increment(key, delta);
     }
 
+    @Override
+    public Boolean multi() {
+        try {
+            redisTemplate.multi();
+        } catch (Exception e) {
+            return false;
+        }
+        return true;
+    }
+
+    @Override
+    public Boolean exec() {
+        try {
+            redisTemplate.exec();
+        } catch (Exception e) {
+            return false;
+        }
+        return true;
+    }
 }

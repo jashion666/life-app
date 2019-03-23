@@ -2,7 +2,9 @@ package com.app.client.test.controller;
 
 import com.alibaba.dubbo.config.annotation.Reference;
 import com.app.client.redis.RedisClient;
+import com.app.client.test.service.IDemoService;
 import com.life.app.service.DemoService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -15,6 +17,7 @@ import java.util.Map;
  */
 @RestController
 @RequestMapping("/demo")
+@Slf4j
 public class DemoController {
 
     @Autowired
@@ -26,11 +29,15 @@ public class DemoController {
     @Reference(version = "1.0.0", group = "CarServiceImpl")
     private DemoService carService;
 
+    @Autowired
+    private IDemoService clientDemoService;
+
     @RequestMapping("/test")
-    public Map<String, Object> hello() {
+    public Map<String, Object> hello() throws Exception {
         Map<String, Object> map = new HashMap<>(16);
         map.put(demoService.sayHello("WORLD"), this.carService.sayHello("66"));
-        redisClient.set("a", map);
+        clientDemoService.insert();
+        log.info(redisClient.get("test1").toString());
         return map;
     }
 }

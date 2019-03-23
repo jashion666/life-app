@@ -78,4 +78,18 @@ public interface RedisClient {
      */
     Long increment(final String key, long delta);
 
+    /**
+     * 开启事物
+     *
+     * @return boolean
+     */
+    Boolean multi();
+
+    /**
+     * 执行事务后关闭
+     *
+     * @return boolean
+     */
+    Boolean exec();
+
 }

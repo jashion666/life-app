@@ -26,8 +26,7 @@ public class CarServiceImpl implements DemoService {
     @Transactional(rollbackFor = Exception.class, transactionManager = "primaryTransactionManager")
     public String sayHello(String name) {
         log.info("入参================::{name}->" + name);
-        testMapper.delete(name);
-        int w = 1 / 0;
+//        testMapper.delete(name);
         return "查询结果:" + testMapper.selectByName(name);
     }
 }
