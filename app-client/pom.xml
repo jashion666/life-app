@@ -23,7 +23,7 @@
             <artifactId>spring-boot-starter</artifactId>
         </dependency>
         <dependency>
-            <groupId>com.life.app</groupId>
+            <groupId>app.api</groupId>
             <artifactId>app-api</artifactId>
             <version>1.0-SNAPSHOT</version>
         </dependency>

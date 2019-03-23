@@ -29,7 +29,7 @@ public class DemoController {
     @RequestMapping("/test")
     public Map<String, Object> hello() {
         Map<String, Object> map = new HashMap<>(16);
-        map.put(demoService.sayHello("WORLD"), this.carService.sayHello("666啊"));
+        map.put(demoService.sayHello("WORLD"), this.carService.sayHello("66"));
         redisClient.set("a", map);
         return map;
     }
