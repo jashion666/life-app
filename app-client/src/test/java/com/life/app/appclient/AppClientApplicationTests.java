@@ -5,12 +5,119 @@ import org.junit.runner.RunWith;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
-@RunWith(SpringRunner.class)
-@SpringBootTest
-public class AppClientApplicationTests {
+import java.io.File;
+import java.io.IOException;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
 
-  @Test
-  public void contextLoads() {
-  }
+public class AppClientApplicationTests {
+    private String[] fileNameArray = {"enji_20180301_1.csv",
+            "enji_20180301_2.csv",
+            "enji_20180301_1.csv",
+            "tokoen_20180301_1.csv",
+            "tokoen_20180301_2.csv",
+            "tokoen_20180301_1.csv",
+            "kintaikyuyo_20180301_1.txt",
+            "kintaikyuyo_20180301_2.txt",
+            "kintaikyuyo_20180301_1.txt",
+            "sisetu_kaisyo_20180301_1.csv",
+            "sisetu_kaisyo_20180301_2.csv",
+            "sisetu_kaisyo_20180301_1.csv",
+            "01-kojin_20180301.txt",
+            "02-syuro_20180301.txt",
+            "03-jusyo_20180301.txt",
+            "04-sikaku_20180301.txt",
+            "05-idou_20180301.txt",
+            "06-syokureki_20180301.txt",
+            "07-kyusyoku_20180301.txt",
+            "08-syogu2_20180301.txt",
+            "01-kojin_20180301.txt",
+            "02-syuro_20180301.txt",
+            "03-jusyo_20180301.txt",
+            "04-sikaku_20180301.txt",
+            "05-idou_20180301.txt",
+            "06-syokureki_20180301.txt",
+            "07-kyusyoku_20180301.txt",
+            "08-syogu2_20180301.txt",
+            "09-patosyuro_20180301.txt",
+            "10-jitansyuro_20180301.txt",
+            "10-jitansyuro_20180301_2.txt",
+            "01-kojin_20180301.txt",
+            "02-syuro_20180301.txt",
+            "03-jusyo_20180301.txt",
+            "04-sikaku_20180301.csv",
+            "05-idou_20180301.txt",
+            "06-syokureki_20180301.txt",
+            "07-kyusyoku_20180301.csv",
+            "08-syogu2_20180301.txt",
+            "09-patosyuro_20180301.txt",
+            "10-jitansyuro_20180301.txt",
+            "01-kojin_20180301.txt",
+            "02-syuro_20180301.csv",
+            "03-jusyo_20180301.txt",
+            "04-sikaku_20180301.txt",
+            "05-idou_20180301.txt",
+            "06-syokureki_20180301.txt",
+            "07-kyusyoku_20180301.txt",
+            "08-syogu2_20180301.txt",
+            "09-patosyuro_20180301.csv",
+            "10-jitansyuro_20180301.txt",
+            "01-kojin_20180301.txt",
+            "02-syuro_20180301.txt",
+            "03-jusyo_20180301.txt",
+            "04-sikakua_20180301.txt",
+            "05-idou_20180301.txt",
+            "06-syokurekia_20180301.txt",
+            "07-kyusyoku_20180301.txt",
+            "08-syogu2_20180301.txt",
+            "09-patosyuro_20180301.txt",
+            "10-jitansyuro_20180301.txt",
+            "01-kojina_20180301.txt",
+            "02-syuro_20180301.txt",
+            "03-jusyo_20180301.txt",
+            "04-sikaku_20180301.txt",
+            "05-idou_20180301.txt",
+            "06-syokureki_20180301.txt",
+            "07-kyusyoku_20180301.txt",
+            "08-syogu2_20180301.txt",
+            "09-patosyuro_20180301.txt",
+            "10-jitansyuroa_20180301.txt",
+            "01-kojin_20180301.txt",
+            "02-syuro_20180301.txt",
+            "03-jusyo_20180301.txt",
+            "04-sikaku_20180301.txt",
+            "05-idou_20180301.txt",
+            "06-syokureki_20180301.txt",
+            "07-kyusyoku_20180301.txt",
+            "08-syogu2_20180301.txt",
+            "09-patosyuro_20180301.txt",
+            "10-jitansyuro_20180301.txt",
+
+    };
+
+    @Test
+    public void contextLoads() {
+        String path = "D:\\开发文档\\幼儿园\\file";
+        Arrays.asList(this.fileNameArray).forEach(fileName -> {
+            File file = new File(path + "\\" + fileName);
+            if (!file.exists()) {
+                try {
+                    file.createNewFile();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+        Map<String, Boolean> map = new HashMap<>();
+        map.put("1", false);
+        Arrays.asList(this.fileNameArray).forEach(fileName -> {
+            if (map.containsKey(fileName)) {
+                map.put(fileName, false);
+            }
+        });
+
+
+    }
 
 }
