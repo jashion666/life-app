@@ -1,7 +1,7 @@
 package com.app.client.redis;
 
 
-import org.springframework.stereotype.Component;
+import java.util.Map;
 
 /**
  * jedis的接口.
@@ -9,7 +9,6 @@ import org.springframework.stereotype.Component;
  * @author 会写代码的厨师.
  * * @date : 2018-08-04
  */
-@Component
 public interface RedisClient {
 
     /**
@@ -91,5 +90,9 @@ public interface RedisClient {
      * @return boolean
      */
     Boolean exec();
+
+    Boolean hmset(String key, Map<String, Object> value);
+
+    boolean hmset(String key, Map<String, Object> map, long time);
 
 }

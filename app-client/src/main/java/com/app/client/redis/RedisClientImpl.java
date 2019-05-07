@@ -2,7 +2,9 @@ package com.app.client.redis;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.stereotype.Component;
 
+import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
@@ -11,6 +13,7 @@ import java.util.concurrent.TimeUnit;
  *
  * @author ：wkh.
  */
+@Component
 public class RedisClientImpl implements RedisClient {
 
     @Autowired
@@ -145,5 +148,37 @@ public class RedisClientImpl implements RedisClient {
             return false;
         }
         return true;
+    }
+
+    @Override
+    public Boolean hmset(String key, Map<String, Object> value) {
+        try {
+            redisTemplate.opsForHash().putAll(key, value);
+        } catch (Exception e) {
+            return false;
+        }
+        return true;
+    }
+
+    /**
+     * HashSet 并设置时间
+     *
+     * @param key  键
+     * @param map  对应多个键值
+     * @param time 时间(秒)
+     * @return true成功 false失败
+     */
+    @Override
+    public boolean hmset(String key, Map<String, Object> map, long time) {
+        try {
+            redisTemplate.opsForHash().putAll(key, map);
+            if (time > 0) {
+                redisTemplate.expire(key, time, TimeUnit.SECONDS);
+            }
+            return true;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
     }
 }

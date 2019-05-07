@@ -120,4 +120,25 @@ public class AppClientApplicationTests {
 
     }
 
+    @Test
+    public void resign() {
+        int health = 100;
+        while (true) {
+            System.out.println("辛辛苦苦的工作");
+
+            if (workOvertime(12)) {
+                health--;
+            }
+
+            if (health < 50) {
+                System.out.println("尊敬的领导，告辞！");
+                break;
+            }
+        }
+    }
+
+    private boolean workOvertime(Integer workTime) {
+        return workTime > 8;
+    }
+
 }

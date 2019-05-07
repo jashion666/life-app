@@ -13,10 +13,9 @@ public class WebSocketComponent {
     @Autowired
     private SimpMessagingTemplate simpMessageSendingOperations;
 
-    @Scheduled(fixedRate = 1000 * 60)
+    @Scheduled(fixedRate = 1000 * 3600)
     public void sendMessage() {
         log.info("推送ing...");
-        //将消息推送给‘、topic/ip’的客户端
-        simpMessageSendingOperations.convertAndSend("/topic", "我是从服务器来的消息!");
+        simpMessageSendingOperations.convertAndSend("/topic", "test webSocket!");
     }
 }

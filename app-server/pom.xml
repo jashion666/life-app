@@ -3,11 +3,12 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <parent>
-        <groupId>com.life.app</groupId>
-        <artifactId>life-app</artifactId>
+        <groupId>app.parent</groupId>
+        <artifactId>app-parent</artifactId>
         <version>1.0-SNAPSHOT</version>
-        <relativePath>../pom.xml</relativePath>
+        <relativePath>../app-parent/pom.xml</relativePath>
     </parent>
+
     <groupId>app.server</groupId>
     <artifactId>app-server</artifactId>
     <version>0.0.1-SNAPSHOT</version>

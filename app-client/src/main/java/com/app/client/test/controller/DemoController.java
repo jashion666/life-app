@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 /**
  * @author wkh.
@@ -36,8 +37,13 @@ public class DemoController {
     public Map<String, Object> hello() throws Exception {
         Map<String, Object> map = new HashMap<>(16);
         map.put(demoService.sayHello("WORLD"), this.carService.sayHello("66"));
+
         clientDemoService.insert();
-        log.info(redisClient.get("test1").toString());
+        redisClient.set("test", "333", 2000L);
+        Object a = Optional.ofNullable(redisClient.get("test")).orElseGet(() -> {
+            return "1";
+        });
+        Optional.ofNullable(redisClient.get("test")).ifPresent(r -> log.info(r.toString()));
         return map;
     }
 }
