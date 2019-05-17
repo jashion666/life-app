@@ -1,4 +1,4 @@
-package com.life.app.service;
+package com.app.service;
 
 /**
  * @author wkh.

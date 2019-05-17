@@ -22,12 +22,8 @@
         <module>app-client</module>
         <module>app-admin</module>
         <module>app-parent</module>
+        <module>app-miniprogram</module>
     </modules>
-
-    <properties>
-        <druid-version>1.1.12</druid-version>
-        <mybatis.version>3.4.6</mybatis.version>
-    </properties>
 
     <dependencies>
     </dependencies>

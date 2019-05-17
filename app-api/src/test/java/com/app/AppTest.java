@@ -1,8 +1,6 @@
-package com.life.app;
+package com.app;
 
 import org.junit.Test;
-
-import java.util.Arrays;
 
 /**
  * Unit test for simple App.

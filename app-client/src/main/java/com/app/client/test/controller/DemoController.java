@@ -3,7 +3,7 @@ package com.app.client.test.controller;
 import com.alibaba.dubbo.config.annotation.Reference;
 import com.app.client.redis.RedisClient;
 import com.app.client.test.service.IDemoService;
-import com.life.app.service.DemoService;
+import com.app.service.DemoService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -15,7 +15,7 @@ import java.util.Optional;
 
 /**
  * @author wkh.
- */
+        */
 @RestController
 @RequestMapping("/demo")
 @Slf4j

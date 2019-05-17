@@ -1,7 +1,7 @@
 package com.app.server.test.service.impl;
 
 import com.alibaba.dubbo.config.annotation.Service;
-import com.life.app.service.DemoService;
+import com.app.service.DemoService;
 import lombok.extern.slf4j.Slf4j;
 
 /**
