@@ -3,10 +3,8 @@ package app.miniprogram.api.common;
 import java.util.Map;
 
 import app.miniprogram.utils.JsonUtils;
+import app.miniprogram.http.HttpClient;
 import com.fasterxml.jackson.core.type.TypeReference;
-import org.apache.http.HttpResponse;
-import org.apache.http.client.fluent.Request;
-import org.apache.http.util.EntityUtils;
 
 /**
  * 获取token类
@@ -14,7 +12,7 @@ import org.apache.http.util.EntityUtils;
  * @author :wkh.
  * @date :2019/5/16.
  */
-public class AuthService {
+public class TokenService {
 
     /**
      * 获取权限token
@@ -25,7 +23,7 @@ public class AuthService {
      * "expires_in": 2592000
      * }
      */
-    public String getAuth() {
+    public static String getAuth() {
         // TODO 放到properties里
         // 官网获取的 API Key 更新为你注册的
         String clientId = "xV7sxak2CgDZc1ak2F6qVqeP";
@@ -43,15 +41,15 @@ public class AuthService {
      * @return assess_token 示例：
      * "24.460da4889caad24cccdb1fea17221975.2592000.1491995545.282335-1234567"
      */
-    private String getAuth(String ak, String sk) {
+    private static String getAuth(String ak, String sk) {
         String authHost = "https://aip.baidubce.com/oauth/2.0/token?";
         String getAccessTokenUrl = authHost
                 + "grant_type=client_credentials"
                 + "&client_id=" + ak
                 + "&client_secret=" + sk;
         try {
-            HttpResponse response = Request.Get(getAccessTokenUrl).execute().returnResponse();
-            String result = EntityUtils.toString(response.getEntity());
+            HttpClient httpClient = new HttpClient();
+            String result = httpClient.doGet(getAccessTokenUrl);
             Map<String, String> resMap = new JsonUtils().getCustomObjectMapper().readValue(result, new TypeReference<Map<String, String>>() {
             });
             return resMap.get("access_token");
