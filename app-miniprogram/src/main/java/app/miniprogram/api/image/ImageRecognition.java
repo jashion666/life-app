@@ -2,6 +2,7 @@ package app.miniprogram.api.image;
 
 import app.miniprogram.http.HttpClient;
 import app.miniprogram.utils.JsonUtils;
+import com.app.utils.http.HttpClientImpl;
 import com.fasterxml.jackson.core.type.TypeReference;
 
 import java.io.FileInputStream;
@@ -36,8 +37,8 @@ public class ImageRecognition {
             Map<String, String> headers = new HashMap<>(16);
             headers.put("Content-Type", "application/x-www-form-urlencoded");
 
-            HttpClient httpClient = new HttpClient();
-            String result = httpClient.doPostForm(url, param, headers);
+            com.app.utils.http.HttpClient httpClient = new HttpClientImpl();
+            String result = httpClient.post(url, param, headers);
 
             resMap = new JsonUtils().getCustomObjectMapper().readValue(result, new TypeReference<Map<String, Object>>() {
             });

@@ -3,7 +3,8 @@ package app.miniprogram.api.common;
 import java.util.Map;
 
 import app.miniprogram.utils.JsonUtils;
-import app.miniprogram.http.HttpClient;
+import com.app.utils.http.HttpClient;
+import com.app.utils.http.HttpClientImpl;
 import com.fasterxml.jackson.core.type.TypeReference;
 
 /**
@@ -48,8 +49,8 @@ public class TokenService {
                 + "&client_id=" + ak
                 + "&client_secret=" + sk;
         try {
-            HttpClient httpClient = new HttpClient();
-            String result = httpClient.doGet(getAccessTokenUrl);
+            HttpClient httpClient = new HttpClientImpl();
+            String result = httpClient.get(getAccessTokenUrl);
             Map<String, String> resMap = new JsonUtils().getCustomObjectMapper().readValue(result, new TypeReference<Map<String, String>>() {
             });
             return resMap.get("access_token");
