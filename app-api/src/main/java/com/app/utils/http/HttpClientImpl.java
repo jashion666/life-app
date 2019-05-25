@@ -39,6 +39,7 @@ public class HttpClientImpl implements HttpClient {
      * @param schemeName schemeName 默认为 http
      */
     public HttpClientImpl(String hostName, Integer port, String schemeName) {
+        // TODO 需要考虑ip被封，可设置用多个代理随机调用
         this.proxyHostName = hostName;
         this.proxyHostName = schemeName;
         this.proxyPort = port;
@@ -115,9 +116,6 @@ public class HttpClientImpl implements HttpClient {
         HttpResponse response;
         try {
             response = execute(request);
-            HttpEntity entity = response.getEntity();
-            System.out.println(entity.getContent());
-
             if (response.getStatusLine().getStatusCode() == HttpStatus.SC_OK) {
                 return EntityUtils.toString(response.getEntity());
             }

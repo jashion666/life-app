@@ -58,6 +58,19 @@
         </dependency>
     </dependencies>
     <build>
+        <!--需要搭配profile使用 将resource可以加到pom来-->
+        <!--<filters>-->
+            <!--<filter>src/main/resources/api.properties</filter>-->
+        <!--</filters>-->
+        <!--<resources>-->
+            <!--<resource>-->
+                <!--<directory>src/main/resources</directory>-->
+                <!--<includes>-->
+                    <!--<include>**/*</include>-->
+                <!--</includes>-->
+                <!--<filtering>true</filtering> &lt;!&ndash; 是否使用过滤器 &ndash;&gt;-->
+            <!--</resource>-->
+        <!--</resources>-->
         <plugins>
             <plugin>
                 <groupId>org.springframework.boot</groupId>

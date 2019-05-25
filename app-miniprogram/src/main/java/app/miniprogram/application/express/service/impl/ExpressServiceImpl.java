@@ -1,12 +1,15 @@
 package app.miniprogram.application.express.service.impl;
 
 import app.miniprogram.application.express.service.ExpressService;
-import app.miniprogram.utils.PropertiesUtil;
+import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.app.utils.http.HttpClient;
+import com.app.utils.http.HttpClientExtension;
+import com.app.utils.http.HttpClientExtensionImpl;
 import com.app.utils.http.HttpClientImpl;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -18,36 +21,84 @@ import java.util.Map;
 @Service
 public class ExpressServiceImpl implements ExpressService {
 
-    @Autowired
-    private PropertiesUtil properties;
+    @Value("${kuaidi100.url}")
+    private String url;
+
+    @Value("${kuaidi100.user.agent}")
+    private String apiAgent;
+
+    @Value("${kuaidi100.api.url}")
+    private String apiUrl;
+
+    @Value("${kuaidi100.api.type.url}")
+    private String apiExpressTypeUrl;
+
+    @Value("${kuaidi100.cookie.key1}")
+    private String csrfTokenKey;
+
+    @Value("${kuaidi100.cookie.key2}")
+    private String wwwIdKey;
 
     @Override
-    public Map<String, Object> queryExpressByGateWay(String postId, String type) {
+    public Map<String, Object> queryExpressByGateWay(String postId) {
 
         // TODO 需要申请api； 先调用快递web接口，如果失败去调用 申请的快递100api
+        // TODO 每一个接口 都需要判断返回code
+        String type = getExpressType(postId);
         return queryByWeb(postId, type);
     }
 
+    private String getExpressType(String postId) {
+
+        // TODO 需要改进
+        HttpClient httpClient = new HttpClientImpl();
+        Map<String, String> param1 = new HashMap<>(16);
+        param1.put("resultv2", "1");
+        param1.put("text", postId);
+        String ret = httpClient.post(this.apiExpressTypeUrl, param1);
+        Map<String, Object> map = JSONObject.parseObject(ret);
+        JSONArray jsonArray = (JSONArray) map.get("auto");
+        Map<String, String> map1 = (Map) jsonArray.get(0);
+        return map1.get("comCode");
+    }
+
+    /**
+     * 从web直接查询
+     */
     private Map<String, Object> queryByWeb(String postId, String type) {
 
         Map<String, String> headers = new HashMap<>(16);
-
-        // TODO cookie 必传 如果cookie失效怎么办？
-        headers.put("Cookie", "csrftoken=S204_1FmZVfgogelz5gMPavVQ-htZrIvyV3Za500UG0; WWWID=WWW17AE316632589F8829B366522BB0A8A2; Hm_lvt_22ea01af58ba2be0fec7c11b25e88e6c=1558598018,1558698527; Hm_lpvt_22ea01af58ba2be0fec7c11b25e88e6c=1558698527");
-        headers.put("Referer", properties.getValue("kuaidi100.referer"));
-        headers.put("User-Agent", properties.getValue("common.user.agent"));
+        headers.put("Cookie", getCookies(this.url));
+        headers.put("Referer", this.url);
+        headers.put("User-Agent", this.apiAgent);
 
         Map<String, String> param = new HashMap<>(16);
         param.put("postid", postId);
         param.put("type", type);
-        // 暂定为空
-        param.put("phone", "");
         param.put("temp", String.valueOf(Math.random()));
-
+        param.put("phone", "");
 
         HttpClient httpClient = new HttpClientImpl();
-        String ret = httpClient.get(properties.getValue("kuaidi100.api.url"), param, headers);
-        Map<String, Object> result = JSONObject.parseObject(ret);
-        return result;
+        String ret = httpClient.get(this.apiUrl, param, headers);
+
+        return JSONObject.parseObject(ret);
+    }
+
+    /**
+     * 获取web的cookie
+     */
+    private String getCookies(String url) {
+        // TODO 放到缓存中 过期时间为1天
+        HttpClientExtension httpClientExtension = new HttpClientExtensionImpl();
+
+        Map<String, String> cookies = httpClientExtension.getCookies(url);
+        String csrfToken = cookies.get(this.csrfTokenKey);
+        String wwwId = cookies.get(this.wwwIdKey);
+
+        if (StringUtils.isEmpty(csrfToken) || StringUtils.isEmpty(wwwId)) {
+            throw new IllegalStateException("cookie获取失败,请专用api方式获取");
+        }
+
+        return this.csrfTokenKey + "=" + csrfToken + ";" + this.wwwIdKey + "=" + wwwId;
     }
 }

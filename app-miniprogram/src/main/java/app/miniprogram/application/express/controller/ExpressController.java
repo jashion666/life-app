@@ -28,11 +28,10 @@ public class ExpressController {
     }
 
     @RequestMapping("query")
-    public ResponseEntity<JsonResult> queryExpress(@RequestParam("postId") String postId,
-                                                   @RequestParam("type") String type) {
+    public ResponseEntity<JsonResult> queryExpress(@RequestParam("postId") String postId) {
 
         return new ResponseEntity<>(
                 JsonResult.success(
-                        expressService.queryExpressByGateWay(postId, type)), HttpStatus.OK);
+                        expressService.queryExpressByGateWay(postId)), HttpStatus.OK);
     }
 }

@@ -8,5 +8,5 @@ import java.util.Map;
  */
 public interface ExpressService {
 
-    Map<String, Object> queryExpressByGateWay(String postId, String type);
+    Map<String, Object> queryExpressByGateWay(String postId);
 }

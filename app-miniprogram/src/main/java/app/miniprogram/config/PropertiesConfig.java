@@ -3,12 +3,14 @@ package app.miniprogram.config;
 import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.PropertySource;
 import org.springframework.context.support.ReloadableResourceBundleMessageSource;
 
 @Configuration
+@PropertySource({"classpath:/api.properties"})
 public class PropertiesConfig {
 
-    private static final String[] BASE_NAMES = {"classpath:/api"};
+    private static final String[] BASE_NAMES = {"classpath:/api.properties"};
 
     @Bean
     public MessageSource messageSource() {
