@@ -10,7 +10,7 @@ import lombok.Getter;
  */
 @AllArgsConstructor
 @Getter
-public enum HttpEnums {
+public enum HttpStateEnums {
 
     // TODO 其他的code 一一对应
     /**
@@ -36,9 +36,9 @@ public enum HttpEnums {
      * @return 错误信息
      */
     public static String getValue(Integer code) {
-        for (HttpEnums httpEnums : HttpEnums.values()) {
-            if (httpEnums.getCode().equals(code)) {
-                return httpEnums.getValue();
+        for (HttpStateEnums httpStateEnums : HttpStateEnums.values()) {
+            if (httpStateEnums.getCode().equals(code)) {
+                return httpStateEnums.getValue();
             }
         }
         return null;

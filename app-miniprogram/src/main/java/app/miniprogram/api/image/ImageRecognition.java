@@ -1,7 +1,6 @@
 package app.miniprogram.api.image;
 
-import app.miniprogram.http.HttpClient;
-import app.miniprogram.utils.JsonUtils;
+import app.miniprogram.utils.JsonUtil;
 import com.app.utils.http.HttpClientImpl;
 import com.fasterxml.jackson.core.type.TypeReference;
 
@@ -40,7 +39,7 @@ public class ImageRecognition {
             com.app.utils.http.HttpClient httpClient = new HttpClientImpl();
             String result = httpClient.post(url, param, headers);
 
-            resMap = new JsonUtils().getCustomObjectMapper().readValue(result, new TypeReference<Map<String, Object>>() {
+            resMap = new JsonUtil().getCustomObjectMapper().readValue(result, new TypeReference<Map<String, Object>>() {
             });
         } catch (IOException e) {
             e.printStackTrace();

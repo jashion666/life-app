@@ -4,7 +4,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-public class JsonUtils {
+public class JsonUtil {
     private ObjectMapper objectMapper;
 
     public ObjectMapper getCustomObjectMapper() {

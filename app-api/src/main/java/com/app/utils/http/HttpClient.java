@@ -46,7 +46,7 @@ public interface HttpClient {
     String post(String url);
 
     /**
-     * 无参数post请求
+     * 有参数post请求
      *
      * @param url      请求地址
      * @param paramMap 请求参数
@@ -55,7 +55,7 @@ public interface HttpClient {
     String post(String url, Map<String, String> paramMap);
 
     /**
-     * 无参数post请求
+     * 有参数post请求
      *
      * @param url        请求地址
      * @param paramMap   请求参数
