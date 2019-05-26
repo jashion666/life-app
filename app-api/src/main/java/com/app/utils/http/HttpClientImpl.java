@@ -123,7 +123,7 @@ public class HttpClientImpl implements HttpClient {
             e.printStackTrace();
             throw new IllegalArgumentException(e);
         }
-        return HttpStateEnums.getValue(response.getStatusLine().getStatusCode());
+        throw new IllegalArgumentException(HttpStateEnums.getValue(response.getStatusLine().getStatusCode()));
     }
 
     private HttpResponse execute(Request request) throws IOException {

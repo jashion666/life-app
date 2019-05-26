@@ -2,6 +2,7 @@ package app.miniprogram.application.express.controller;
 
 import app.miniprogram.application.express.service.ExpressService;
 import app.miniprogram.utils.JsonResult;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -17,6 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
  */
 @RestController
 @RequestMapping("express")
+@Slf4j
 public class ExpressController {
 
     @Autowired
@@ -30,8 +32,14 @@ public class ExpressController {
     @RequestMapping("query")
     public ResponseEntity<JsonResult> queryExpress(@RequestParam("postId") String postId) {
 
-        return new ResponseEntity<>(
-                JsonResult.success(
-                        expressService.queryExpressByGateWay(postId)), HttpStatus.OK);
+        try {
+            return new ResponseEntity<>(
+                    JsonResult.success(
+                            expressService.queryExpressByGateWay(postId)), HttpStatus.OK);
+        } catch (Exception e) {
+            log.error(e.getMessage());
+            return new ResponseEntity<>(
+                    JsonResult.failed("接口请求失败"), HttpStatus.OK);
+        }
     }
 }
