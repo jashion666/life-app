@@ -6,9 +6,12 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.Map;
 
 /**
  * 快递业务接口
@@ -30,12 +33,14 @@ public class ExpressController {
     }
 
     @RequestMapping("query")
-    public ResponseEntity<JsonResult> queryExpress(@RequestParam("postId") String postId) {
+    public ResponseEntity<JsonResult> queryExpress(@RequestParam("postId") String postId,
+                                                   @RequestParam(value = "type", required = false) String type) {
 
         try {
+
             return new ResponseEntity<>(
                     JsonResult.success(
-                            expressService.queryExpressByGateWay(postId)), HttpStatus.OK);
+                            expressService.queryExpressByGateWay(postId, type)), HttpStatus.OK);
         } catch (Exception e) {
             log.error(e.getMessage());
             return new ResponseEntity<>(

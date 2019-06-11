@@ -52,71 +52,96 @@ public class ExpressServiceImpl implements ExpressService {
     private RedisClient redisClient;
 
     @Override
-    public Map<String, Object> queryExpressByGateWay(String postId) {
+    public Map<String, Object> queryExpressByGateWay(String postId, String type) {
 
         // TODO 需要申请api； 先调用快递web接口，如果失败去调用 申请的快递100api
-        Map<String, Object> webResult = queryByWeb(postId);
-        if (Constants.HTTP_OK.equals(webResult.get("status"))) {
-            return webResult;
+        log.info("== web快递查询开始");
+        log.info("=== 快递单号" + postId);
+        try {
+            // 获取快递公司
+            Map<String, Object> typeMap = getExpressTypeMap(postId);
+            // 用户没有选择默认快递时，快递公司为第一个
+            if (StringUtils.isEmpty(type)) {
+                type = getExpressType(typeMap);
+            }
+            Map<String, Object> result = queryByWeb(postId, type);
+            result.put("type", typeMap.get("auto"));
+            log.info("=== 查询成功");
+            log.info("== web快递查询结束");
+            return result;
+        } catch (Exception e) {
+            log.info("=== web查询状态失败，查询结果为 ==" + e.getMessage());
         }
-        log.info("web查询状态失败，查询结果为 ==" + webResult);
         // 调用api方式
         return queryByApi(postId);
     }
 
+    /**
+     * 获取快递类型
+     */
+    @Override
+    public Map<String, Object> getExpressTypeMap(String postId) {
+        HttpClient httpClient = new HttpClientImpl();
+        Map<String, String> param1 = new HashMap<>(16);
+        param1.put("resultv2", "1");
+        param1.put("text", postId);
+        String ret = httpClient.post(this.apiExpressTypeUrl, param1);
+        return JSONObject.parseObject(ret);
+    }
+
     private Map<String, Object> queryByApi(String postId) {
         log.info("== api查询开始");
+        log.info("== api快递查询结束");
         return null;
     }
 
     /**
      * 从web直接查询
      */
-    private Map<String, Object> queryByWeb(String postId) {
+    private Map<String, Object> queryByWeb(String postId, String type) throws Exception {
 
-        log.info("== web快递查询开始");
-        log.info("=== 快递单号" + postId);
-        Map<String, Object> webResult = new HashMap<>(16);
+        Map<String, Object> webResult;
         HttpClient httpClient = new HttpClientImpl();
 
-        try {
-            Map<String, String> headers = new HashMap<>(16);
-            headers.put("Cookie", getCookie(this.url));
-            headers.put("Referer", this.url);
-            headers.put("User-Agent", this.apiAgent);
+        Map<String, String> headers = new HashMap<>(16);
+        headers.put("Cookie", getCookie(this.url));
+        headers.put("Referer", this.url);
+        headers.put("User-Agent", this.apiAgent);
 
-            Map<String, String> param = new HashMap<>(16);
-            param.put("postid", postId);
-            param.put("type", getExpressType(postId));
-            param.put("temp", String.valueOf(Math.random()));
-            param.put("phone", "");
+        Map<String, String> param = new HashMap<>(16);
+        param.put("postid", postId);
+        param.put("type", type);
+        param.put("temp", String.valueOf(Math.random()));
+        param.put("phone", "");
 
-            String ret = httpClient.get(this.apiUrl, param, headers);
-            webResult = JSONObject.parseObject(ret);
-            log.error("查询成功");
-        } catch (Exception e) {
-            log.error("查询失败");
-            e.printStackTrace();
-        }
-        log.info("== web快递查询结束");
+        String ret = httpClient.get(this.apiUrl, param, headers);
+        webResult = JSONObject.parseObject(ret);
+
+        checkResult(webResult);
+
         return webResult;
+    }
+
+    private void checkResult(Map<String, Object> result) throws Exception {
+        if (result == null || result.size() == 0) {
+            throw new Exception("返回结果为空");
+        }
+        if (!Constants.EXPRESS_CHECK_OK.equals(result.get("ischeck"))) {
+            throw new Exception("查询结果异常，可能需要重新获取cookie 结果==> " + result);
+        }
+        if (!Constants.HTTP_OK.equals(result.get("status"))) {
+            throw new Exception("查询结果异常，状态为 结果==> " + result);
+        }
     }
 
     /**
      * 获取快递类型
      */
     @SuppressWarnings("unchecked")
-    private String getExpressType(String postId) {
+    private String getExpressType(Map<String, Object> map) {
 
-        // TODO 需要改进 ，应该把此code类型返回前台，可供用户选择。或者给出提示，默认是哪家快递公司，之后让用户自己更改。
-        HttpClient httpClient = new HttpClientImpl();
-        Map<String, String> param1 = new HashMap<>(16);
-        param1.put("resultv2", "1");
-        param1.put("text", postId);
-        String ret = httpClient.post(this.apiExpressTypeUrl, param1);
-        Map<String, Object> map = JSONObject.parseObject(ret);
         if (!map.containsKey("auto")) {
-            throw new IllegalArgumentException("获取快递类型失败，请通知管理员，或者使用api方式获取");
+            throw new IllegalArgumentException("获取快递类型失败，使用api方式获取 ==>" + map);
         }
         JSONArray jsonArray = (JSONArray) map.get("auto");
         Map<String, String> map1 = (Map<String, String>) jsonArray.get(0);
@@ -134,7 +159,8 @@ public class ExpressServiceImpl implements ExpressService {
         HttpClientExtension httpClientExtension = new HttpClientExtensionImpl();
         Map<String, String> cookiesMap = httpClientExtension.getCookies(url);
         String cookie = joinCookie(cookiesMap);
-        // redis存放时间为1天
+        log.info("redis 内的cookie过期 添加cookie的值到Redis中。");
+        // redis存放时间为1小时
         this.redisClient.set(expressRedisKey, cookiesMap, redisExpireTime);
         return cookie;
     }
