@@ -19,7 +19,12 @@ import java.util.*;
 public class ImageRecognition {
 
     private static final String IMAGE_RECOGNITION_API_URL = "https://aip.baidubce.com/rest/2.0/ocr/v1/general_basic?";
-    private static final String LANGUAGE_TYPE = "CHN_ENG";
+    // CHN_ENG、ENG、
+    // POR、FRE、
+    // GER、ITA、
+    // SPA、RUS、
+    // JAP、KOR
+    private static final String LANGUAGE_TYPE = "JAP";
 
     public Map<String, Object> getImgText(String imgUrl) {
         return doRecognition(imageToBase64Str(imgUrl));
@@ -28,7 +33,7 @@ public class ImageRecognition {
     private Map<String, Object> doRecognition(String img) {
         Map<String, Object> resMap = new HashMap<>(16);
         try {
-            String url = IMAGE_RECOGNITION_API_URL + "access_token=24.5851b753d2060a85ab70962ae4e71cfb.2592000.1560649112.282335-16263178";
+            String url = IMAGE_RECOGNITION_API_URL + "access_token=24.93fadf11a8a551b73ad653447c71ff8d.2592000.1563432014.282335-16263178";
 
             Map<String, String> param = new HashMap<>(16);
             param.put("image", img);

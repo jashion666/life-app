@@ -24,7 +24,7 @@ public class TokenService {
      * "expires_in": 2592000
      * }
      */
-    public static String getAuth() {
+    public String getAuth() {
         // TODO 放到properties里
         // 官网获取的 API Key 更新为你注册的
         String clientId = "xV7sxak2CgDZc1ak2F6qVqeP";
@@ -42,7 +42,7 @@ public class TokenService {
      * @return assess_token 示例：
      * "24.460da4889caad24cccdb1fea17221975.2592000.1491995545.282335-1234567"
      */
-    private static String getAuth(String ak, String sk) {
+    private String getAuth(String ak, String sk) {
         String authHost = "https://aip.baidubce.com/oauth/2.0/token?";
         String getAccessTokenUrl = authHost
                 + "grant_type=client_credentials"

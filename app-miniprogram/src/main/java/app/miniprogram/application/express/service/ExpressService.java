@@ -1,27 +1,29 @@
 package app.miniprogram.application.express.service;
 
+import org.springframework.stereotype.Service;
+
 import java.util.Map;
 
 /**
  * @author :wkh.
- * @date :2019/5/25.
+ * @date :2019/7/31.
  */
+@Service
 public interface ExpressService {
 
     /**
-     * 快递查询
+     * 获取快递信息
      *
      * @param postId 快递单号
-     * @param type   快递公司类型
+     * @param type   快递类型
      * @return 查询结果
      */
-    Map<String, Object> queryExpressByGateWay(String postId, String type);
+    Map<String, Object> getExpressMap(String postId, String type) throws Exception;
 
     /**
-     * 快递公司查询
+     * 插入快递查询结果
      *
-     * @param postId 快递单号
-     * @return 公司集合
+     * @param map 查询结果
      */
-    Map<String, Object> getExpressTypeMap(String postId);
+    void insertExpress(Map<String, Object> map);
 }
