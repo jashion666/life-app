@@ -3,27 +3,22 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <parent>
-        <groupId>app.parent</groupId>
+        <groupId>com.life.app.parent</groupId>
         <artifactId>app-parent</artifactId>
-        <version>1.0-SNAPSHOT</version>
+        <version>0.0.1-SNAPSHOT</version>
         <relativePath>../app-parent/pom.xml</relativePath>
     </parent>
     <artifactId>app-miniprogram</artifactId>
     <name>app-miniprogram</name>
     <packaging>jar</packaging>
     <properties>
-        <java.version>1.11</java.version>
+        <java.version>11</java.version>
     </properties>
 
     <dependencies>
         <dependency>
             <groupId>app.api</groupId>
             <artifactId>app-api</artifactId>
-            <version>1.0-SNAPSHOT</version>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-web</artifactId>
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -36,40 +31,6 @@
         </dependency>
     </dependencies>
     <build>
-        <!--需要搭配profile使用 将resource可以加到pom来-->
-        <!--<filters>-->
-            <!--<filter>src/main/resources/api.properties</filter>-->
-        <!--</filters>-->
-        <!--<resources>-->
-            <!--<resource>-->
-                <!--<directory>src/main/resources</directory>-->
-                <!--<includes>-->
-                    <!--<include>**/*</include>-->
-                <!--</includes>-->
-                <!--<filtering>true</filtering> &lt;!&ndash; 是否使用过滤器 &ndash;&gt;-->
-            <!--</resource>-->
-        <!--</resources>-->
-        <plugins>
-            <plugin>
-                <groupId>org.springframework.boot</groupId>
-                <artifactId>spring-boot-maven-plugin</artifactId>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-surefire-plugin</artifactId>
-                <configuration>
-                    <skip>true</skip>
-                </configuration>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-compiler-plugin</artifactId>
-                <configuration>
-                    <source>11</source>
-                    <target>11</target>
-                </configuration>
-            </plugin>
-        </plugins>
     </build>
 
 </project>
