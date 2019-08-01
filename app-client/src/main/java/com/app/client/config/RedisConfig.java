@@ -1,8 +1,8 @@
 package com.app.client.config;
 
-import com.app.client.redis.KryoRedisSerializer;
 import com.app.client.redis.RedisClient;
 import com.app.client.redis.RedisClientImpl;
+import com.app.utils.serializer.KryoRedisSerializer;
 import org.springframework.cache.annotation.CachingConfigurerSupport;
 import org.springframework.cache.interceptor.KeyGenerator;
 import org.springframework.context.annotation.Bean;

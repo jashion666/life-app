@@ -17,6 +17,7 @@ public interface ExpressService {
      * @param postId 快递单号
      * @param type   快递类型
      * @return 查询结果
+     * @throws Exception e
      */
     Map<String, Object> getExpressMap(String postId, String type) throws Exception;
 

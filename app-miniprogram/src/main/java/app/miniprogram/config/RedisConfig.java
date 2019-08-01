@@ -1,8 +1,8 @@
 package app.miniprogram.config;
 
-import app.miniprogram.redis.KryoRedisSerializer;
 import app.miniprogram.redis.RedisClient;
 import app.miniprogram.redis.RedisClientImpl;
+import com.app.utils.serializer.KryoRedisSerializer;
 import org.springframework.cache.annotation.CachingConfigurerSupport;
 import org.springframework.cache.interceptor.KeyGenerator;
 import org.springframework.context.annotation.Bean;
