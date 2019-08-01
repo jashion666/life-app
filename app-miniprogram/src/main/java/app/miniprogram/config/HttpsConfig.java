@@ -15,9 +15,8 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class HttpsConfig {
 
-
     /**
-     * spring boot 2.0
+     * spring boot 2.1.3
      */
     @Bean
     public TomcatServletWebServerFactory servletContainer() {

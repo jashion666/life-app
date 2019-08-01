@@ -27,13 +27,6 @@ public class ExpressServiceImpl implements ExpressService {
      */
     private final Express apiExpressImpl;
 
-    @Autowired
-    public ExpressServiceImpl(@Qualifier("apiExpressImpl") Express apiExpressImpl,
-                              @Qualifier("gateWayExpressImpl") Express gateWayExpressImpl) {
-        this.apiExpressImpl = apiExpressImpl;
-        this.gateWayExpressImpl = gateWayExpressImpl;
-    }
-
     @Override
     public Map<String, Object> getExpressMap(String postId, String type) throws Exception {
         try {
@@ -46,5 +39,12 @@ public class ExpressServiceImpl implements ExpressService {
     @Override
     public void insertExpress(Map<String, Object> map) {
 
+    }
+
+    @Autowired
+    public ExpressServiceImpl(@Qualifier("apiExpressImpl") Express apiExpressImpl,
+                              @Qualifier("gateWayExpressImpl") Express gateWayExpressImpl) {
+        this.apiExpressImpl = apiExpressImpl;
+        this.gateWayExpressImpl = gateWayExpressImpl;
     }
 }

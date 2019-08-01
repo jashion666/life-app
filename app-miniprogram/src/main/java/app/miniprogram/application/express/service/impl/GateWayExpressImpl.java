@@ -106,6 +106,7 @@ public class GateWayExpressImpl implements Express {
      * @throws Exception 异常
      */
     private Map<String, Object> queryAgain(String postId, String type) throws Exception {
+        log.info("=== 查询失败 清除缓存再次查询");
         // 清除key再查询
         redisClient.remove(expressRedisKey);
         return doQuery(postId, type);
