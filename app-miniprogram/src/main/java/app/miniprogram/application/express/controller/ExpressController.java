@@ -1,6 +1,7 @@
 package app.miniprogram.application.express.controller;
 
-import app.miniprogram.application.express.service.impl.ExpressServiceImpl;
+import app.miniprogram.application.express.entity.ExpressEntity;
+import app.miniprogram.application.express.service.ExpressService;
 import app.miniprogram.utils.JsonResult;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,8 +10,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-
-import java.util.Map;
 
 /**
  * 快递业务接口
@@ -23,7 +22,7 @@ import java.util.Map;
 @Slf4j
 public class ExpressController {
 
-    private final ExpressServiceImpl expressService;
+    private final ExpressService expressService;
 
     /**
      * 快递查询
@@ -33,22 +32,24 @@ public class ExpressController {
      * @return 查询结果
      */
     @RequestMapping("query")
-    public ResponseEntity<JsonResult> queryExpress(@RequestParam("postId") String postId,
+    public ResponseEntity<JsonResult> queryExpress(@RequestParam("uId") Integer uId,
+                                                   @RequestParam("postId") String postId,
                                                    @RequestParam(value = "type", required = false) String type) {
 
         try {
-            Map<String, Object> resultMap = expressService.getExpressMap(postId, type);
+            ExpressEntity entity = expressService.getExpressInfo(uId, postId, type);
             // TODO 查询结果插入数据库逻辑
-            expressService.insertExpress(resultMap);
-            return new ResponseEntity<>(JsonResult.success(resultMap), HttpStatus.OK);
+            expressService.saveExpress(entity);
+            return new ResponseEntity<>(JsonResult.success(entity), HttpStatus.OK);
         } catch (Exception e) {
+            e.printStackTrace();
             log.error(e.getMessage());
             return new ResponseEntity<>(JsonResult.failed("接口请求失败"), HttpStatus.OK);
         }
     }
 
     @Autowired
-    public ExpressController(ExpressServiceImpl expressService) {
+    public ExpressController(ExpressService expressService) {
         this.expressService = expressService;
     }
 }

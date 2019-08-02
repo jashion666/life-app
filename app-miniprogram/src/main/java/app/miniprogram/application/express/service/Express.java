@@ -16,7 +16,7 @@ public interface Express {
      * @return 查询结果
      * @throws Exception e
      */
-    Map<String, Object> queryExpressByGateWay(String postId, String type) throws Exception;
+    Map<String, Object> queryExpress(String postId, String type) throws Exception;
 
     /**
      * 快递公司查询

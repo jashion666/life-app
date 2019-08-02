@@ -14,4 +14,15 @@ public class Constants {
      * 快递返回成功表示
      */
     public static final String EXPRESS_CHECK_OK = "0";
+
+    /**
+     * 快递未完成flag
+     */
+    public static final Integer EXPRESS_NOT_COMPLETE_FLAG = 0;
+
+
+    /**
+     * 快递完成flag
+     */
+    public static final Integer EXPRESS_COMPLETE_FLAG = 1;
 }

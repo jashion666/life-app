@@ -17,7 +17,7 @@ import java.util.Map;
 public class ApiExpressImpl implements Express {
 
     @Override
-    public Map<String, Object> queryExpressByGateWay(String postId, String type) {
+    public Map<String, Object> queryExpress(String postId, String type) {
         log.info("== api查询开始");
         // TODO 需要去申请快递
         log.info("== api快递查询结束");

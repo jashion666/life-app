@@ -1,30 +1,28 @@
 package app.miniprogram.application.express.service;
 
-import org.springframework.stereotype.Service;
-
-import java.util.Map;
+import app.miniprogram.application.express.entity.ExpressEntity;
 
 /**
  * @author :wkh.
  * @date :2019/7/31.
  */
-@Service
 public interface ExpressService {
 
     /**
      * 获取快递信息
      *
+     * @param uId    用户id
      * @param postId 快递单号
      * @param type   快递类型
      * @return 查询结果
      * @throws Exception e
      */
-    Map<String, Object> getExpressMap(String postId, String type) throws Exception;
+    ExpressEntity getExpressInfo(Integer uId, String postId, String type) throws Exception;
 
     /**
      * 插入快递查询结果
      *
-     * @param map 查询结果
+     * @param entity 快递实体类
      */
-    void insertExpress(Map<String, Object> map);
+    void saveExpress(ExpressEntity entity);
 }

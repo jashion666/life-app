@@ -31,9 +31,9 @@
     <logger name="java.sql.Connection" level="DEBUG"/>
     <logger name="java.sql.Statement" level="DEBUG"/>
     <logger name="java.sql.PreparedStatement" level="DEBUG"/>
-    <!--<logger name="com.app.server" level="DEBUG"/>-->
+    <logger name="app.miniprogram" level="DEBUG"/>
 
-    <logger name="com.app.server" level="DEBUG" additivity="false">
+    <logger name="app.miniprogramr" level="DEBUG" additivity="false">
         <appender-ref ref="STDOUT"/>
     </logger>
     <!-- 日志输出级别 -->

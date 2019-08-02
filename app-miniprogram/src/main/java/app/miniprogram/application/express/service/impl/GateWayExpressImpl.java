@@ -53,7 +53,7 @@ public class GateWayExpressImpl implements Express {
     private final RedisClient redisClient;
 
     @Override
-    public Map<String, Object> queryExpressByGateWay(String postId, String type) throws Exception {
+    public Map<String, Object> queryExpress(String postId, String type) throws Exception {
         try {
             return doQuery(postId, type);
         } catch (Exception e) {
@@ -132,7 +132,7 @@ public class GateWayExpressImpl implements Express {
      * 从web直接查询
      */
     private Map<String, Object> queryByWeb(String postId, String type) {
-        log.info("== web快递查询开始 参数==> postId：" + postId + "type: " + type);
+        log.info("== web快递查询开始 参数==> postId：" + postId + " type: " + type);
         Map<String, Object> webResult;
         HttpClient httpClient = new HttpClientImpl();
 
@@ -148,6 +148,7 @@ public class GateWayExpressImpl implements Express {
         param.put("phone", "");
 
         String ret = httpClient.get(this.apiUrl, param, headers);
+        log.debug("查询结果为==> " + ret);
         webResult = JSONObject.parseObject(ret);
         return webResult;
     }
