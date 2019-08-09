@@ -78,8 +78,7 @@ public class ExpressSqlProvider {
         
         sql.WHERE("post_id = #{postId,jdbcType=VARCHAR}");
         sql.WHERE("u_id = #{uId,jdbcType=INTEGER}");
-        sql.WHERE("type = #{type,jdbcType=VARCHAR}");
-        
+
         return sql.toString();
     }
 }

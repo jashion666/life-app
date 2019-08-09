@@ -18,10 +18,6 @@ public class ExpressEntityKey {
      */
     private String postId;
     /**
-     * 快递类型.
-     */
-    private String type;
-    /**
      * 快递的key.
      */
     private String key;
@@ -29,14 +25,13 @@ public class ExpressEntityKey {
     public ExpressEntityKey() {
     }
 
-    public ExpressEntityKey(Integer uId, String postId, String type) {
+    public ExpressEntityKey(Integer uId, String postId) {
         this.postId = postId;
         this.uId = uId;
-        this.type = type;
     }
 
     public String getKey() {
-        return this.uId + this.type + this.postId;
+        return this.uId + this.postId;
     }
 
 }

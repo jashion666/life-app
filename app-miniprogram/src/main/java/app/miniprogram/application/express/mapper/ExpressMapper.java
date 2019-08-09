@@ -3,16 +3,12 @@ package app.miniprogram.application.express.mapper;
 import app.miniprogram.application.express.entity.ExpressEntity;
 import app.miniprogram.application.express.entity.ExpressEntityKey;
 import org.apache.ibatis.annotations.*;
-import org.apache.ibatis.type.JdbcType;
-
-import java.util.Date;
 
 public interface ExpressMapper {
     @Delete({
             "delete from t_express",
             "where post_id = #{postId,jdbcType=VARCHAR}",
             "and u_id = #{uId,jdbcType=INTEGER}",
-            "and type = #{type,jdbcType=VARCHAR}"
     })
     int deleteByPrimaryKey(ExpressEntityKey key);
 
@@ -40,7 +36,6 @@ public interface ExpressMapper {
             "from t_express",
             "where post_id = #{postId,jdbcType=VARCHAR}",
             "and u_id = #{uId,jdbcType=INTEGER}",
-            "and type = #{type,jdbcType=VARCHAR}",
     })
     ExpressEntity selectByPrimaryKey(ExpressEntityKey key);
 
@@ -55,7 +50,6 @@ public interface ExpressMapper {
             "update_id = #{updateId,jdbcType=INTEGER}",
             "where post_id = #{postId,jdbcType=VARCHAR}",
             "and u_id = #{uId,jdbcType=INTEGER}",
-            "and type = #{type,jdbcType=VARCHAR}",
             "and update_time = #{updateTime,jdbcType=TIMESTAMP}"
     })
     int updateByPrimaryKey(ExpressEntity record);

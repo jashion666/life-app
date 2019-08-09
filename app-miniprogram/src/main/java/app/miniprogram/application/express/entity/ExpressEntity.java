@@ -14,6 +14,10 @@ import java.util.Map;
 public class ExpressEntity extends ExpressEntityKey {
 
     /**
+     * 快递类型.
+     */
+    private String type;
+    /**
      * 物流轨迹.
      */
     private String trajectory;
@@ -34,11 +38,11 @@ public class ExpressEntity extends ExpressEntityKey {
     }
 
     public ExpressEntity(ExpressEntityKey expressEntityKey) {
-        super(expressEntityKey.getUId(), expressEntityKey.getPostId(), expressEntityKey.getType());
+        super(expressEntityKey.getUId(), expressEntityKey.getPostId());
     }
 
-    public ExpressEntity(Integer uId, String postId, String type) {
-        super(uId, postId, type);
+    public ExpressEntity(Integer uId, String postId) {
+        super(uId, postId);
     }
 
 }

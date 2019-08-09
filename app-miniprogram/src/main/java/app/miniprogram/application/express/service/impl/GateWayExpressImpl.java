@@ -2,6 +2,7 @@ package app.miniprogram.application.express.service.impl;
 
 import app.miniprogram.application.constant.Constants;
 import app.miniprogram.application.express.service.Express;
+import app.miniprogram.http.HttpProxyClient;
 import app.miniprogram.redis.RedisClient;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
@@ -52,8 +53,15 @@ public class GateWayExpressImpl implements Express {
 
     private final RedisClient redisClient;
 
+    @Autowired
+    private HttpProxyClient httpProxyClient;
+
+    private HttpClient httpClient;
+
     @Override
     public Map<String, Object> queryExpress(String postId, String type) throws Exception {
+
+        httpClient = httpProxyClient.getHttpProxy();
         try {
             return doQuery(postId, type);
         } catch (Exception e) {
@@ -67,11 +75,9 @@ public class GateWayExpressImpl implements Express {
      */
     @Override
     public Map<String, Object> getExpressTypeMap(String postId) {
-        HttpClient httpClient = new HttpClientImpl();
         Map<String, String> param1 = new HashMap<>(16);
         param1.put("resultv2", "1");
         param1.put("text", postId);
-        // TODO 在这使用 rabbitMq  减缓服务器压力
         String ret = httpClient.post(this.apiExpressTypeUrl, param1);
         Map<String, Object> map = JSONObject.parseObject(ret);
         if (!map.containsKey("auto")) {
@@ -106,7 +112,7 @@ public class GateWayExpressImpl implements Express {
      * @throws Exception 异常
      */
     private Map<String, Object> queryAgain(String postId, String type) throws Exception {
-        log.info("=== 查询失败 清除缓存再次查询");
+        log.info("=== 清除缓存再次查询");
         // 清除key再查询
         redisClient.remove(expressRedisKey);
         return doQuery(postId, type);
@@ -134,12 +140,11 @@ public class GateWayExpressImpl implements Express {
     private Map<String, Object> queryByWeb(String postId, String type) {
         log.info("== web快递查询开始 参数==> postId：" + postId + " type: " + type);
         Map<String, Object> webResult;
-        HttpClient httpClient = new HttpClientImpl();
 
         Map<String, String> headers = new HashMap<>(16);
-        headers.put("Cookie", getCookie(this.url));
-        headers.put("Referer", this.url);
-        headers.put("User-Agent", this.apiAgent);
+        headers.put("Cookie", getCookie(url));
+        headers.put("Referer", url);
+        headers.put("User-Agent", apiAgent);
 
         Map<String, String> param = new HashMap<>(16);
         param.put("postid", postId);
@@ -147,10 +152,15 @@ public class GateWayExpressImpl implements Express {
         param.put("temp", String.valueOf(Math.random()));
         param.put("phone", "");
 
-        String ret = httpClient.get(this.apiUrl, param, headers);
+        String ret = httpClient.get(apiUrl, param, headers);
         log.debug("查询结果为==> " + ret);
         webResult = JSONObject.parseObject(ret);
+        webResult.put("org", ret);
         return webResult;
+    }
+
+    private String getCookie(String url) {
+        return Optional.ofNullable(getCookiesInRedis()).orElseGet(() -> getCookiesInWeb(url));
     }
 
     /**
@@ -162,13 +172,16 @@ public class GateWayExpressImpl implements Express {
     private void checkResult(Map<String, Object> result) throws Exception {
         // TODO 需要完善
         if (result == null || result.size() == 0) {
-            throw new Exception("返回结果为空");
+            throw new Exception("查询失败 返回结果为空");
         }
         if (result.get("data") == null) {
             throw new Exception("查询结果异常，可能需要重新获取cookie 结果==> " + result);
         }
         if (!Constants.HTTP_OK.equals(result.get("status"))) {
             throw new Exception("查询结果异常，状态为 结果==> " + result);
+        }
+        if (String.valueOf(result.get("org")).contains("查无结果")) {
+            throw new Exception("查无结果 ==> " + result);
         }
     }
 
@@ -181,10 +194,6 @@ public class GateWayExpressImpl implements Express {
         JSONArray jsonArray = (JSONArray) map.get("auto");
         Map<String, String> map1 = (Map<String, String>) jsonArray.get(0);
         return map1.get("comCode");
-    }
-
-    private String getCookie(String url) {
-        return Optional.ofNullable(getCookiesInRedis()).orElseGet(() -> getCookiesInWeb(url));
     }
 
     /**

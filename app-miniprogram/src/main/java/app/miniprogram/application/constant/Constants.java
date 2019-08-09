@@ -20,9 +20,18 @@ public class Constants {
      */
     public static final Integer EXPRESS_NOT_COMPLETE_FLAG = 0;
 
-
     /**
      * 快递完成flag
      */
     public static final Integer EXPRESS_COMPLETE_FLAG = 1;
+
+    /**
+     * 需要的ip的数量
+     */
+    public static final Integer WANTED_IP_NUMBER = 1;
+
+    /**
+     * 最多两个ip
+     */
+    public static final Integer MAX_IP_NUMBER = 2;
 }

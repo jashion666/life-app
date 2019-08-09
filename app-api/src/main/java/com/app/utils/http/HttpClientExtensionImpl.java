@@ -15,9 +15,19 @@ import java.util.Map;
  */
 public class HttpClientExtensionImpl extends HttpClientImpl implements HttpClientExtension {
 
+    public HttpClientExtensionImpl() {
+    }
+
+    public HttpClientExtensionImpl(ProxyInfo proxyInfo) {
+        super(proxyInfo);
+    }
+
     @Override
     public Map<String, String> getHeaders(String url) {
         Connection conn = Jsoup.connect(url);
+        if (proxyInfo != null) {
+            conn.proxy(proxyInfo.getIp(), proxyInfo.getPort());
+        }
         Connection.Response resp;
         try {
             resp = conn.method(Connection.Method.GET).execute();
@@ -31,6 +41,9 @@ public class HttpClientExtensionImpl extends HttpClientImpl implements HttpClien
     @Override
     public Map<String, String> getCookies(String url) {
         Connection conn = Jsoup.connect(url);
+        if (proxyInfo != null) {
+            conn.proxy(proxyInfo.getIp(), proxyInfo.getPort());
+        }
         Connection.Response resp;
         try {
             resp = conn.method(Connection.Method.GET).execute();
@@ -40,4 +53,5 @@ public class HttpClientExtensionImpl extends HttpClientImpl implements HttpClien
         }
         return resp.cookies();
     }
+
 }

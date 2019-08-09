@@ -1,6 +1,5 @@
 package com.app.utils.http;
 
-import org.apache.commons.lang.StringUtils;
 import org.apache.http.*;
 import org.apache.http.client.fluent.Request;
 import org.apache.http.entity.ContentType;
@@ -24,9 +23,7 @@ import static com.app.constant.CommonConstant.URL_PARAMETER_SEPARATOR;
  */
 public class HttpClientImpl implements HttpClient {
 
-    private String proxyHostName;
-    private String proxySchemeName;
-    private Integer proxyPort;
+    public ProxyInfo proxyInfo;
 
     public HttpClientImpl() {
     }
@@ -34,15 +31,10 @@ public class HttpClientImpl implements HttpClient {
     /**
      * 构建代理参数
      *
-     * @param hostName   代理host
-     * @param port       代理端口
-     * @param schemeName schemeName 默认为 http
+     * @param proxyInfo 代理实体类
      */
-    public HttpClientImpl(String hostName, Integer port, String schemeName) {
-        // TODO 需要考虑ip被封，可设置用多个代理随机调用
-        this.proxyHostName = hostName;
-        this.proxyHostName = schemeName;
-        this.proxyPort = port;
+    public HttpClientImpl(ProxyInfo proxyInfo) {
+        this.proxyInfo = proxyInfo;
     }
 
     @Override
@@ -185,13 +177,10 @@ public class HttpClientImpl implements HttpClient {
      * 设置代理
      */
     private void buildProxy(Request request) {
-        if (StringUtils.isEmpty(proxyHostName) || proxyPort == null) {
+        if (proxyInfo == null) {
             return;
         }
-        if (StringUtils.isEmpty(proxySchemeName)) {
-            proxySchemeName = HttpHost.DEFAULT_SCHEME_NAME;
-        }
-        request.viaProxy(new HttpHost(proxyHostName, proxyPort, proxySchemeName));
+        request.viaProxy(new HttpHost(proxyInfo.getIp(), proxyInfo.getPort(), proxyInfo.getScheme()));
     }
 
 }

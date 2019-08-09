@@ -1,4 +1,4 @@
-package app.miniprogram.utils;
+package app.miniprogram.enums;
 
 /**
  * http枚举
