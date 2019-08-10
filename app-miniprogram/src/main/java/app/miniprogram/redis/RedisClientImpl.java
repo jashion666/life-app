@@ -102,7 +102,7 @@ public class RedisClientImpl implements RedisClient {
      *
      * @param key        k
      * @param value      v
-     * @param expireTime 过期时间
+     * @param expireTime 过期时间(秒)
      * @return boolean
      */
     @Override

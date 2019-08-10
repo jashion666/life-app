@@ -11,7 +11,12 @@ public enum HttpEnums {
     /**
      * redis 中代理ip的key
      */
-    PROXY_KEY("proxyKey");
+    PROXY_KEY("proxyKey"),
+
+    /**
+     * 正在获取ip的key
+     */
+    PROXY_PROCESS_KEY("proxyProcessKey");
 
     private String value;
 

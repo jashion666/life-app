@@ -12,6 +12,7 @@ import org.springframework.amqp.rabbit.annotation.RabbitHandler;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
 
 import java.util.List;
 
@@ -29,6 +30,13 @@ public class ProxyConsumer {
 
     @RabbitHandler
     public void process(Integer num) {
+
+        if (!StringUtils.isEmpty(redisClient.get(HttpEnums.PROXY_PROCESS_KEY.getValue()))) {
+            return;
+        }
+        // 利用redis锁住，防止多线程同时操作（只锁住20分钟）
+        redisClient.set(HttpEnums.PROXY_PROCESS_KEY.getValue(), "1", 1200L);
+
         // TODO 列队同时处理
         List<ProxyInfo> proxyInfoList = CommonUtil.getProxyInfoList(redisClient);
         if (proxyInfoList.size() == Constants.MAX_IP_NUMBER) {
@@ -50,6 +58,8 @@ public class ProxyConsumer {
         }
 
         redisClient.set(HttpEnums.PROXY_KEY.getValue(), proxyInfoList);
+        // 一个线程处理完成之后再释放锁
+        redisClient.remove(HttpEnums.PROXY_PROCESS_KEY.getValue());
 
     }
 
