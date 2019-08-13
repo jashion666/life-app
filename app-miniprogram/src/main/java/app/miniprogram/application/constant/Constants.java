@@ -23,7 +23,7 @@ public class Constants {
     /**
      * 快递完成flag
      */
-    public static final Integer EXPRESS_COMPLETE_FLAG = 1;
+    public static final String EXPRESS_COMPLETE_FLAG = "3";
 
     /**
      * 需要的ip的数量

@@ -19,7 +19,6 @@ public class ProxyProducer {
     public void send(Integer msg) {
         rabbitTemplate.setExchange("proxy.direct.exchange");
         rabbitTemplate.setRoutingKey("proxy.direct.routing.key.1");
-        log.info("生产者发出信息" + msg);
         rabbitTemplate.convertAndSend(msg);
     }
 }

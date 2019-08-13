@@ -3,17 +3,17 @@ package app.miniprogram.application.express.service.impl;
 import app.miniprogram.application.constant.Constants;
 import app.miniprogram.application.express.entity.ExpressEntity;
 import app.miniprogram.application.express.entity.ExpressEntityKey;
+import app.miniprogram.application.express.entity.TrajectoryEntity;
 import app.miniprogram.application.express.mapper.ExpressMapper;
 import app.miniprogram.application.express.service.Express;
 import app.miniprogram.application.express.service.ExpressService;
-import com.alibaba.fastjson.JSONObject;
+import app.miniprogram.utils.CommonUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Map;
 
 /**
  * @author :wkh.
@@ -45,18 +45,14 @@ public class ExpressServiceImpl implements ExpressService {
         // 先从db检索，检索未果，从api查询
         ExpressEntity result = getByDb(entityKey);
         if (!Constants.EXPRESS_COMPLETE_FLAG.equals(result.getCompleteFlag())) {
-            result.setTrajectoryMap(this.getTrajectoryMapByApi(postId, type));
-            //TODO 物流完成flag 不对
-            result.setCompleteFlag("3".equals(result.getTrajectoryMap().get("state"))
-                    ? Constants.EXPRESS_COMPLETE_FLAG
-                    : Constants.EXPRESS_NOT_COMPLETE_FLAG);
+            result.setTrajectoryInfo(getTrajectoryMapByApi(postId, type));
+            // 物流状态
+            result.setCompleteFlag(result.getTrajectoryInfo().getState());
+            // 获取快递类型
+            result.setType(result.getTrajectoryInfo().getCom());
+            // 将map物流结果转成json字符串保存到db
+            result.setTrajectory(String.valueOf(result.getTrajectoryInfo().getData()));
         }
-
-        // 将map物流结果转成json字符串保存到db
-        result.setTrajectory(String.valueOf(result.getTrajectoryMap().get("org")));
-        // 获取快递类型
-        result.setType(result.getTrajectoryMap().get("com").toString());
-
         return result;
     }
 
@@ -68,14 +64,17 @@ public class ExpressServiceImpl implements ExpressService {
         if (expressEntity == null) {
             return new ExpressEntity(entityKey);
         }
-        expressEntity.setTrajectoryMap(JSONObject.parseObject(expressEntity.getTrajectory()));
+        TrajectoryEntity entity = new TrajectoryEntity();
+        // 将db中json类物流轨迹转换成实体类返回前台
+        entity.setData(CommonUtil.parseExpressData(expressEntity.getTrajectory()));
+        expressEntity.setTrajectoryInfo(entity);
         return expressEntity;
     }
 
     /**
      * 从api查询物流信息
      */
-    private Map<String, Object> getTrajectoryMapByApi(String postId, String type) throws Exception {
+    private TrajectoryEntity getTrajectoryMapByApi(String postId, String type) throws Exception {
         try {
             return gateWayExpressImpl.queryExpress(postId, type);
         } catch (Exception e) {
@@ -89,9 +88,10 @@ public class ExpressServiceImpl implements ExpressService {
 
         entity.setInsertId(entity.getUId());
         entity.setUpdateId(entity.getUId());
+        // 将实体类物流轨迹转换成json字符串保存在db
+        entity.setTrajectory(CommonUtil.formatExpressData(entity.getTrajectoryInfo()));
 
         ExpressEntity dbResult = expressMapper.selectByPrimaryKey(entity);
-        // rebbitMQ?
         if (dbResult == null) {
             expressMapper.insert(entity);
             return;

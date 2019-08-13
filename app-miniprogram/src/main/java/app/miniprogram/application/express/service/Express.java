@@ -1,6 +1,10 @@
 package app.miniprogram.application.express.service;
 
-import java.util.Map;
+import app.miniprogram.application.express.entity.ExpressTypeEntity;
+import app.miniprogram.application.express.entity.TrajectoryEntity;
+
+import java.io.IOException;
+import java.util.List;
 
 /**
  * @author :wkh.
@@ -16,7 +20,7 @@ public interface Express {
      * @return 查询结果
      * @throws Exception e
      */
-    Map<String, Object> queryExpress(String postId, String type) throws Exception;
+    TrajectoryEntity queryExpress(String postId, String type) throws Exception;
 
     /**
      * 快递公司查询
@@ -24,5 +28,5 @@ public interface Express {
      * @param postId 快递单号
      * @return 公司集合
      */
-    Map<String, Object> getExpressTypeMap(String postId);
+    List<ExpressTypeEntity> getExpressTypeList(String postId) throws IOException;
 }

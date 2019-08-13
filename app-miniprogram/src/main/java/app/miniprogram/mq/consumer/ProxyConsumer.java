@@ -34,15 +34,16 @@ public class ProxyConsumer {
         if (!StringUtils.isEmpty(redisClient.get(HttpEnums.PROXY_PROCESS_KEY.getValue()))) {
             return;
         }
-        // 利用redis锁住，防止多线程同时操作（只锁住20分钟）
-        redisClient.set(HttpEnums.PROXY_PROCESS_KEY.getValue(), "1", 1200L);
 
-        // TODO 列队同时处理
         List<ProxyInfo> proxyInfoList = CommonUtil.getProxyInfoList(redisClient);
         if (proxyInfoList.size() == Constants.MAX_IP_NUMBER) {
             return;
         }
-        log.info("列队处理 :");
+
+        // 利用redis锁住，防止多线程同时操作（只锁住20分钟）
+        redisClient.set(HttpEnums.PROXY_PROCESS_KEY.getValue(), "1", 1200L);
+
+        log.info("爬取ip任务开始 ");
         log.info("  从云代理获取代理ip 数量为" + num);
         CloudProxyCrawl proxyCrawl = new CloudProxyCrawl(num, proxyInfoList);
         List<ProxyInfo> crawlerList = proxyCrawl.startCrawler();
@@ -60,6 +61,7 @@ public class ProxyConsumer {
         redisClient.set(HttpEnums.PROXY_KEY.getValue(), proxyInfoList);
         // 一个线程处理完成之后再释放锁
         redisClient.remove(HttpEnums.PROXY_PROCESS_KEY.getValue());
+        log.info("任务结束");
 
     }
 

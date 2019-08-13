@@ -38,14 +38,24 @@ public class ExpressController {
 
         try {
             ExpressEntity entity = expressService.getExpressInfo(uId, postId, type);
-            // TODO 查询结果插入数据库逻辑
             expressService.saveExpress(entity);
+            // 清理不必要数据之后返回给前台
+            clearUnnecessaryData(entity);
             return new ResponseEntity<>(JsonResult.success(entity), HttpStatus.OK);
         } catch (Exception e) {
             e.printStackTrace();
             log.error(e.getMessage());
             return new ResponseEntity<>(JsonResult.failed("接口请求失败"), HttpStatus.OK);
         }
+    }
+
+    private void clearUnnecessaryData(ExpressEntity entity) {
+        entity.setUId(null);
+        entity.setUpdateId(null);
+        entity.setInsertId(null);
+        entity.setKey(null);
+        entity.setInsertTime(null);
+        entity.setUpdateId(null);
     }
 
     @Autowired

@@ -1,6 +1,5 @@
 package com.app.utils.http;
 
-import java.io.IOException;
 import java.util.Map;
 
 /**

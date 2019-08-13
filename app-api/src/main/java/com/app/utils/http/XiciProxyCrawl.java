@@ -35,7 +35,7 @@ public class XiciProxyCrawl extends AbstractProxy {
     @Override
     public List<ProxyInfo> startCrawler() {
         for (String url : URLS) {
-            for (int j = 0; j < MAX_PAGE; j++) {
+            for (int j = 1; j <= MAX_PAGE; j++) {
                 if (size() >= wantedNumber) {
                     return proxyList;
                 }

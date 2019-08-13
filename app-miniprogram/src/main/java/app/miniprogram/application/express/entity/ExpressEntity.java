@@ -24,11 +24,11 @@ public class ExpressEntity extends ExpressEntityKey {
     /**
      * 完成标识.
      */
-    private Integer completeFlag;
+    private String completeFlag;
     /**
-     * 物流轨迹map.
+     * 物流轨迹.
      */
-    private Map<String, Object> trajectoryMap;
+    private TrajectoryEntity trajectoryInfo;
     private LocalDateTime insertTime;
     private Integer insertId;
     private LocalDateTime updateTime;
