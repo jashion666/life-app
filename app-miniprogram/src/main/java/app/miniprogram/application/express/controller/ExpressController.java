@@ -11,6 +11,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.List;
+
 /**
  * 快递业务接口
  *
@@ -23,6 +25,23 @@ import org.springframework.web.bind.annotation.RestController;
 public class ExpressController {
 
     private final ExpressService expressService;
+
+    @RequestMapping("test")
+    public ResponseEntity<JsonResult> test() {
+        return new ResponseEntity<>(JsonResult.success("test"), HttpStatus.OK);
+    }
+
+    /**
+     * 快递历史查询
+     *
+     * @param uId 用户id
+     */
+    @RequestMapping("history")
+    public ResponseEntity<JsonResult> getHistory(@RequestParam("uId") Integer uId) {
+        List<ExpressEntity> historyList = expressService.getHistoryList(uId);
+        clearUnnecessaryDataList(historyList);
+        return new ResponseEntity<>(JsonResult.success(historyList), HttpStatus.OK);
+    }
 
     /**
      * 快递查询
@@ -37,7 +56,7 @@ public class ExpressController {
                                                    @RequestParam(value = "type", required = false) String type) {
 
         try {
-            ExpressEntity entity = expressService.getExpressInfo(uId, postId, type);
+            ExpressEntity entity = expressService.getExpressInfo(uId, postId.trim(), type);
             expressService.saveExpress(entity);
             // 清理不必要数据之后返回给前台
             clearUnnecessaryData(entity);
@@ -49,11 +68,14 @@ public class ExpressController {
         }
     }
 
+    private void clearUnnecessaryDataList(List<ExpressEntity> list) {
+        list.forEach(this::clearUnnecessaryData);
+    }
+
     private void clearUnnecessaryData(ExpressEntity entity) {
-        entity.setUId(null);
+        entity.setTrajectory(null);
         entity.setUpdateId(null);
         entity.setInsertId(null);
-        entity.setKey(null);
         entity.setInsertTime(null);
         entity.setUpdateId(null);
     }

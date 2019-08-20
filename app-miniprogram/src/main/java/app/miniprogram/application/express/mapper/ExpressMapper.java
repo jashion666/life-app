@@ -3,7 +3,12 @@ package app.miniprogram.application.express.mapper;
 import app.miniprogram.application.express.entity.ExpressEntity;
 import app.miniprogram.application.express.entity.ExpressEntityKey;
 import org.apache.ibatis.annotations.*;
+import org.springframework.stereotype.Repository;
 
+import javax.annotation.Resource;
+import java.util.List;
+
+@Repository
 public interface ExpressMapper {
     @Delete({
             "delete from t_express",
@@ -38,6 +43,15 @@ public interface ExpressMapper {
             "and u_id = #{uId,jdbcType=INTEGER}",
     })
     ExpressEntity selectByPrimaryKey(ExpressEntityKey key);
+
+    @Select({
+            "select",
+            "u_id, post_id, type, trajectory, complete_flag ,last_update_time ",
+            "from t_express ",
+            "where u_id = #{uId,jdbcType=INTEGER} ",
+            "order by complete_flag , last_update_time desc",
+    })
+    List<ExpressEntity> selectHistory(Integer uId);
 
     @UpdateProvider(type = ExpressSqlProvider.class, method = "updateByPrimaryKeySelective")
     int updateByPrimaryKeySelective(ExpressEntity record);

@@ -34,4 +34,13 @@ public class Constants {
      * 最多两个ip
      */
     public static final Integer MAX_IP_NUMBER = 2;
+    /**
+     * 查询历史一行最多的文字数.
+     */
+    public static final Integer EXPRESS_MAX_NUMBER = 10;
+    /**
+     * 省略符.
+     */
+    public static final String ELLIPSIS = "...";
+
 }

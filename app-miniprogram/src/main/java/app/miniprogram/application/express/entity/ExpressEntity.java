@@ -18,9 +18,25 @@ public class ExpressEntity extends ExpressEntityKey {
      */
     private String type;
     /**
+     * 快递类型文本.
+     */
+    private String typeText;
+    /**
      * 物流轨迹.
      */
     private String trajectory;
+    /**
+     * 快递最后一次更新年月.
+     */
+    private String ymd;
+    /**
+     * 快递最后一次更新年月.
+     */
+    private LocalDateTime lastUpdateTime;
+    /**
+     * 快递最后一次更新的物流.
+     */
+    private String value;
     /**
      * 完成标识.
      */

@@ -1,6 +1,5 @@
 package app.miniprogram.utils;
 
-import app.miniprogram.application.express.entity.ExpressTypeEntity;
 import app.miniprogram.application.express.entity.TrajectoryEntity;
 import app.miniprogram.enums.HttpEnums;
 import app.miniprogram.redis.RedisClient;
