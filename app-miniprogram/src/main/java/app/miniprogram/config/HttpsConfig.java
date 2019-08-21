@@ -7,17 +7,16 @@ import org.apache.tomcat.util.descriptor.web.SecurityConstraint;
 import org.springframework.boot.web.embedded.tomcat.TomcatServletWebServerFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Profile;
 
 /**
  * @author :wkh.
  * @date :2019/5/21.
  */
 @Configuration
+@Profile("dev")
 public class HttpsConfig {
 
-    /**
-     * spring boot 2.1.3
-     */
     @Bean
     public TomcatServletWebServerFactory servletContainer() {
         TomcatServletWebServerFactory tomcat = new TomcatServletWebServerFactory() {

@@ -20,12 +20,12 @@ public interface ExpressMapper {
     @Insert({
             "insert into t_express (post_id, u_id, ",
             "type, trajectory, ",
-            "complete_flag, insert_time, ",
+            "complete_flag,last_update_time, insert_time, ",
             "insert_id, update_time, ",
             "update_id)",
             "values (#{postId,jdbcType=VARCHAR}, #{uId,jdbcType=INTEGER}, ",
             "#{type,jdbcType=VARCHAR}, #{trajectory,jdbcType=VARCHAR}, ",
-            "#{completeFlag,jdbcType=INTEGER}, NOW(), ",
+            "#{completeFlag,jdbcType=INTEGER}, last_update_time = #{lastUpdateTime,jdbcType=TIMESTAMP}, NOW(), ",
             "#{insertId,jdbcType=INTEGER}, NOW(), ",
             "#{updateId,jdbcType=INTEGER})"
     })
@@ -60,6 +60,7 @@ public interface ExpressMapper {
             "update t_express",
             "set trajectory = #{trajectory,jdbcType=VARCHAR},",
             "complete_flag = #{completeFlag,jdbcType=INTEGER},",
+            "last_update_time = #{lastUpdateTime,jdbcType=TIMESTAMP},",
             "update_time = NOW(),",
             "update_id = #{updateId,jdbcType=INTEGER}",
             "where post_id = #{postId,jdbcType=VARCHAR}",

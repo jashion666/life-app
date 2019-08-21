@@ -42,7 +42,7 @@ public class ExpressEntity extends ExpressEntityKey {
      */
     private String completeFlag;
     /**
-     * 物流轨迹.
+     * 物流轨迹实体类.
      */
     private TrajectoryEntity trajectoryInfo;
     private LocalDateTime insertTime;
