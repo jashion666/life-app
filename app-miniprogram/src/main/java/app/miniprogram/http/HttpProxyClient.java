@@ -36,21 +36,19 @@ public class HttpProxyClient {
         log.info("====>开始获取代理");
         List<ProxyInfo> proxyInfoList = CommonUtil.getProxyInfoList(redisClient);
         if (proxyInfoList.size() == 0) {
-            log.info("<==== 代理ip失效，通知远程服务器获取新的ip");
+            log.info("<==== 暂无可用ip，通知远程服务器获取新的ip");
             // 调用RPC 爬取
-            proxyCrawlService.crawProxy(Constants.MAX_IP_NUMBER);
+            proxyCrawlService.crawProxy(proxyInfoList);
             return new HttpClientExtensionImpl();
         }
         Random random = new Random();
-        // 随机获取一个ip
         ProxyInfo info = proxyInfoList.get(random.nextInt(proxyInfoList.size()));
-        // 如果该ip无效删除redis里的值.并且通知rabbitMQ重新获取指定数量的ip.
         // TODO 这块浪费时间
         if (!HttpUtils.checkProxy(info.getIp(), info.getPort())) {
             log.info("<==== 代理ip失效，通知远程服务器获取新的ip");
             proxyInfoList.remove(info);
             redisClient.set(HttpEnums.PROXY_KEY.getValue(), proxyInfoList);
-            proxyCrawlService.crawProxy(Constants.WANTED_IP_NUMBER);
+            proxyCrawlService.crawProxy(proxyInfoList);
             return new HttpClientExtensionImpl();
         }
         log.info("<==== 代理获取成功 信息为：" + info.toString());

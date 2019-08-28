@@ -1,9 +1,12 @@
 package com.app.crawl.mq.producer;
 
+import com.app.utils.http.ProxyInfo;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+
+import java.util.List;
 
 /**
  * @author :wkh.
@@ -16,9 +19,9 @@ public class ProxyProducer {
     @Autowired
     private RabbitTemplate rabbitTemplate;
 
-    public void send(Integer msg) {
+    public void send(List<ProxyInfo> proxyInfoList) {
         rabbitTemplate.setExchange("proxy.direct.crawl.exchange");
         rabbitTemplate.setRoutingKey("proxy.direct.crawl.routing.key.1");
-        rabbitTemplate.convertAndSend(msg);
+        rabbitTemplate.convertAndSend(proxyInfoList);
     }
 }

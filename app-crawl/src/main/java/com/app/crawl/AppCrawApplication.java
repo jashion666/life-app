@@ -6,6 +6,7 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
 import org.springframework.context.annotation.PropertySource;
+import org.springframework.scheduling.annotation.EnableAsync;
 
 /**
  * 爬虫服务端（不启用数据库）
@@ -15,6 +16,7 @@ import org.springframework.context.annotation.PropertySource;
 @SpringBootApplication(exclude = {DruidDataSourceAutoConfigure.class, DataSourceAutoConfiguration.class})
 @PropertySource("classpath:/dubbo-provider.properties")
 @EnableDubbo(scanBasePackages = "com.app.crawl")
+@EnableAsync
 public class AppCrawApplication {
 
     public static void main(String[] args) {

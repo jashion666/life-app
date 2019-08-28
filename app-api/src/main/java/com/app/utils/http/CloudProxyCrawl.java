@@ -14,7 +14,7 @@ import java.util.List;
  * @author :wkh.
  * @date :2019/8/9.
  */
-public class CloudProxyCrawl extends AbstractProxy {
+public class CloudProxyCrawl extends AbstractProxy{
 
     private static final String URL = "http://www.ip3366.net/?stype=1&page=";
 

@@ -3,7 +3,10 @@ package com.app.crawl.service.express;
 import com.alibaba.dubbo.config.annotation.Service;
 import com.app.crawl.mq.producer.ProxyProducer;
 import com.app.service.craw.express.ProxyCrawlService;
+import com.app.utils.http.ProxyInfo;
 import org.springframework.beans.factory.annotation.Autowired;
+
+import java.util.List;
 
 /**
  * @author :wkh.
@@ -22,8 +25,8 @@ public class ProxyCrawlServiceImpl implements ProxyCrawlService {
     }
 
     @Override
-    public void crawProxy(Integer num) {
+    public void crawProxy(List<ProxyInfo> proxyInfoList) {
         // 异步通知rabbitmq爬取ip
-        proxyProducer.send(num);
+        proxyProducer.send(proxyInfoList);
     }
 }
