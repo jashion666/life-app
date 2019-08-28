@@ -1,4 +1,4 @@
-package app.miniprogram.mq.producer;
+package com.app.crawl.mq.producer;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
@@ -17,8 +17,8 @@ public class ProxyProducer {
     private RabbitTemplate rabbitTemplate;
 
     public void send(Integer msg) {
-        rabbitTemplate.setExchange("proxy.direct.exchange");
-        rabbitTemplate.setRoutingKey("proxy.direct.routing.key.1");
+        rabbitTemplate.setExchange("proxy.direct.crawl.exchange");
+        rabbitTemplate.setRoutingKey("proxy.direct.crawl.routing.key.1");
         rabbitTemplate.convertAndSend(msg);
     }
 }

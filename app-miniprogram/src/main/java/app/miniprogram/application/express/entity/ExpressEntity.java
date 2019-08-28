@@ -38,17 +38,30 @@ public class ExpressEntity extends ExpressEntityKey {
      */
     private String value;
     /**
+     * 未完成的物流是否有更新.
+     */
+    private Boolean hasChange;
+    /**
+     * 快递图标地址.
+     */
+    private String imgUrl;
+    /**
      * 完成标识.
      */
     private String completeFlag;
     /**
-     * 物流轨迹实体类.
+     * 快递图标地址.
      */
-    private TrajectoryEntity trajectoryInfo;
+    private String operateFlag;
     private LocalDateTime insertTime;
     private Integer insertId;
     private LocalDateTime updateTime;
     private Integer updateId;
+
+    /**
+     * 物流轨迹实体类.
+     */
+    private TrajectoryEntity trajectoryInfo;
 
     public ExpressEntity() {
     }

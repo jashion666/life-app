@@ -1,4 +1,4 @@
-package com.app.utils.http;
+package com.app.enums;
 
 
 import lombok.AllArgsConstructor;

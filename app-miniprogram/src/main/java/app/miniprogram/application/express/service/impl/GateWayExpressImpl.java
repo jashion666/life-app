@@ -5,9 +5,10 @@ import app.miniprogram.application.express.entity.ExpressTypeEntity;
 import app.miniprogram.application.express.entity.TrajectoryEntity;
 import app.miniprogram.application.express.service.Express;
 import app.miniprogram.http.HttpProxyClient;
-import app.miniprogram.redis.RedisClient;
+import app.miniprogram.utils.CommonUtil;
 import app.miniprogram.utils.JsonUtil;
 import com.alibaba.fastjson.JSONObject;
+import com.app.redis.RedisClient;
 import com.app.utils.http.*;
 import com.fasterxml.jackson.core.type.TypeReference;
 import lombok.extern.slf4j.Slf4j;
@@ -59,20 +60,29 @@ public class GateWayExpressImpl implements Express {
     @Autowired
     private HttpProxyClient httpProxyClient;
 
-    private HttpClientExtension httpClient;
+    /**
+     * 防止并线程出现问题，使用ThreadLocal
+     */
+    private ThreadLocal<HttpClientExtension> httpClientExtensionThreadLocal = new ThreadLocal<>();
 
     @Override
     public TrajectoryEntity queryExpress(String postId, String type) throws Exception {
-
-        httpClient = httpProxyClient.getHttpProxy();
+        httpClientExtensionThreadLocal.set(httpProxyClient.getHttpProxy());
         try {
             log.info("====> 快递查询开始");
             return doQuery(postId, type);
         } catch (Exception e) {
-            // 失败情况清除redis token再查询一次
-            return queryAgain(postId, type);
+            try {
+                // 失败情况清除redis token再查询一次
+                return queryAgain(postId, type);
+            } catch (Exception ex) {
+                // 如果再失败，则移除此代理
+                httpProxyClient.removeTargetProxy(httpClientExtensionThreadLocal.get().getInUseProxy());
+                throw new Exception();
+            }
         } finally {
             log.info("<==== 快递查询结束");
+            httpClientExtensionThreadLocal.remove();
         }
     }
 
@@ -86,7 +96,7 @@ public class GateWayExpressImpl implements Express {
         Map<String, String> param1 = new HashMap<>(4);
         param1.put("resultv2", "1");
         param1.put("text", postId);
-        String ret = httpClient.post(this.apiExpressTypeUrl, param1);
+        String ret = httpClientExtensionThreadLocal.get().post(this.apiExpressTypeUrl, param1);
 
         Map<String, Object> map = JSONObject.parseObject(ret);
 
@@ -137,13 +147,8 @@ public class GateWayExpressImpl implements Express {
      * @return 查询结果
      */
     private TrajectoryEntity queryAndGetType(String postId) throws IOException {
-
         List<ExpressTypeEntity> typeList = getExpressTypeList(postId);
-
-        TrajectoryEntity result = queryByWeb(postId, typeList.get(0).getComCode());
-        // 返回快递类型集合到前台
-        result.setTypeList(typeList);
-        return result;
+        return queryByWeb(postId, typeList.get(0).getComCode());
     }
 
     /**
@@ -163,7 +168,7 @@ public class GateWayExpressImpl implements Express {
         param.put("temp", String.valueOf(Math.random()));
         param.put("phone", "");
 
-        String ret = httpClient.get(apiUrl, param, headers);
+        String ret = httpClientExtensionThreadLocal.get().get(apiUrl, param, headers);
         TrajectoryEntity trajectoryEntity = new JsonUtil().getCustomObjectMapper().readValue(ret, new TypeReference<TrajectoryEntity>() {
         });
         log.debug("查询结果为==> " + ret);
@@ -206,7 +211,7 @@ public class GateWayExpressImpl implements Express {
      * 获取web的cookie
      */
     private String getCookiesInWeb(String url) {
-        Map<String, String> cookiesMap = httpClient.getCookies(url);
+        Map<String, String> cookiesMap = httpClientExtensionThreadLocal.get().getCookies(url);
         String cookie = joinCookie(cookiesMap);
         log.info("redis 内的cookie过期 添加cookie的值到Redis中。");
         // redis存放时间为1小时

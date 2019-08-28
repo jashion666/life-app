@@ -17,4 +17,6 @@ public class ExpressTypeEntity {
     private String startTime;
     private String id;
     private String comCode;
+    private String name;
+    private String imgUrl;
 }

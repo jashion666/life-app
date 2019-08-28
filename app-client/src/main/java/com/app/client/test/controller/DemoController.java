@@ -1,7 +1,7 @@
 package com.app.client.test.controller;
 
 import com.alibaba.dubbo.config.annotation.Reference;
-import com.app.client.redis.RedisClient;
+import com.app.redis.RedisClient;
 import com.app.client.test.service.IDemoService;
 import com.app.service.DemoService;
 import lombok.extern.slf4j.Slf4j;

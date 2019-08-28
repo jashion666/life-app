@@ -10,7 +10,7 @@ import org.springframework.context.support.ReloadableResourceBundleMessageSource
  * @author :wkh
  */
 @Configuration
-@PropertySource({"classpath:/api.properties"})
+@PropertySource({"classpath:/api.properties", "classpath:/dubbo-consumer.properties"})
 public class PropertiesConfig {
 
     private static final String[] BASE_NAMES = {"classpath:/api.properties"};

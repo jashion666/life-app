@@ -1,4 +1,4 @@
-package com.app.client.redis;
+package com.app.redis;
 
 
 import java.util.Map;

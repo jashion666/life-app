@@ -1,6 +1,6 @@
 package com.app.client.config;
 
-import com.app.client.redis.RedisClient;
+import com.app.redis.RedisClient;
 import com.app.client.redis.RedisClientImpl;
 import com.app.utils.serializer.KryoRedisSerializer;
 import org.springframework.cache.annotation.CachingConfigurerSupport;

@@ -121,6 +121,10 @@ public enum ExpressEnums {
      */
     HAIWAIHUANQIU("haiwaihuanqiu", "海外环球"),
     /**
+     * 京东快递.
+     */
+    JD("jd", "京东快递"),
+    /**
      * 佳怡物流.
      */
     JIAYIWULIU("jiayiwuliu", "佳怡物流"),

@@ -1,10 +1,12 @@
 package app.miniprogram.application.constant;
 
+import com.app.constant.CommonConstant;
+
 /**
  * @author :wkh.
  * @date :2019/5/26.
  */
-public class Constants {
+public class Constants extends CommonConstant {
     /**
      * http返回成功code
      */
@@ -26,21 +28,27 @@ public class Constants {
     public static final String EXPRESS_COMPLETE_FLAG = "3";
 
     /**
-     * 需要的ip的数量
-     */
-    public static final Integer WANTED_IP_NUMBER = 1;
-
-    /**
-     * 最多两个ip
-     */
-    public static final Integer MAX_IP_NUMBER = 2;
-    /**
      * 查询历史一行最多的文字数.
      */
-    public static final Integer EXPRESS_MAX_NUMBER = 10;
+    public static final Integer EXPRESS_MAX_NUMBER = 20;
     /**
      * 省略符.
      */
     public static final String ELLIPSIS = "...";
+
+    /**
+     * png.
+     */
+    public static final String PNG = ".png";
+
+    /**
+     * 插入标识.
+     */
+    public static final String INSERT = "1";
+
+    /**
+     * 更新标识.
+     */
+    public static final String UPDATE = "2";
 
 }

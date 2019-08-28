@@ -64,4 +64,11 @@ public interface HttpClient {
      */
     String post(String url, Map<String, String> paramMap, Map<String, String> headersMap);
 
+    /**
+     * 获取正在使用的代理信息
+     *
+     * @return 代理信息
+     */
+    ProxyInfo getInUseProxy();
+
 }

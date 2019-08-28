@@ -1,4 +1,4 @@
-package app.miniprogram.enums;
+package com.app.enums;
 
 import lombok.Getter;
 

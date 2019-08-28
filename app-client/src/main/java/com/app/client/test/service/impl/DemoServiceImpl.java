@@ -1,6 +1,6 @@
 package com.app.client.test.service.impl;
 
-import com.app.client.redis.RedisClient;
+import com.app.redis.RedisClient;
 import com.app.client.test.service.IDemoService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;

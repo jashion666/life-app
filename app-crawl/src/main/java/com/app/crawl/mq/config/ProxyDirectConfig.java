@@ -1,4 +1,4 @@
-package app.miniprogram.mq.config;
+package com.app.crawl.mq.config;
 
 import org.springframework.amqp.core.Binding;
 import org.springframework.amqp.core.BindingBuilder;
@@ -16,17 +16,17 @@ public class ProxyDirectConfig {
 
     @Bean
     public Queue directQueue1() {
-        return new Queue("proxy.direct.queue.1");
+        return new Queue("proxy.direct.crawl.queue.1");
     }
 
     @Bean
     public DirectExchange directExchange() {
-        return new DirectExchange("proxy.direct.exchange");
+        return new DirectExchange("proxy.direct.crawl.exchange");
     }
 
     @Bean
     public Binding bindingQueue1(){
-        return BindingBuilder.bind(directQueue1()).to(directExchange()).with("proxy.direct.routing.key.1");
+        return BindingBuilder.bind(directQueue1()).to(directExchange()).with("proxy.direct.crawl.routing.key.1");
     }
 
 }

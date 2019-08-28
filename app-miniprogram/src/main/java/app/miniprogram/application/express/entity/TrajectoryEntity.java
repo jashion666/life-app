@@ -21,7 +21,6 @@ public class TrajectoryEntity {
     private String message;
     private String status;
     private List<DataBean> data;
-    private List<ExpressTypeEntity> typeList;
 
     @NoArgsConstructor
     @Data

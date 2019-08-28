@@ -25,7 +25,7 @@ public interface ExpressMapper {
             "update_id)",
             "values (#{postId,jdbcType=VARCHAR}, #{uId,jdbcType=INTEGER}, ",
             "#{type,jdbcType=VARCHAR}, #{trajectory,jdbcType=VARCHAR}, ",
-            "#{completeFlag,jdbcType=INTEGER}, last_update_time = #{lastUpdateTime,jdbcType=TIMESTAMP}, NOW(), ",
+            "#{completeFlag,jdbcType=INTEGER}, #{lastUpdateTime,jdbcType=TIMESTAMP}, NOW(), ",
             "#{insertId,jdbcType=INTEGER}, NOW(), ",
             "#{updateId,jdbcType=INTEGER})"
     })
@@ -46,10 +46,21 @@ public interface ExpressMapper {
 
     @Select({
             "select",
+            "post_id, u_id, type, trajectory, complete_flag, insert_time, insert_id, update_time, ",
+            "update_id",
+            "from t_express",
+            "where post_id = #{postId,jdbcType=VARCHAR}",
+            "and u_id = #{uId,jdbcType=INTEGER}",
+            "and type = #{type,jdbcType=VARCHAR}",
+    })
+    ExpressEntity selectByKeyAndType(@Param("uId") Integer uId, @Param("postId") String postId, @Param("type") String type);
+
+    @Select({
+            "select",
             "u_id, post_id, type, trajectory, complete_flag ,last_update_time ",
             "from t_express ",
             "where u_id = #{uId,jdbcType=INTEGER} ",
-            "order by complete_flag , last_update_time desc",
+            "order by complete_flag asc , last_update_time desc , type asc",
     })
     List<ExpressEntity> selectHistory(Integer uId);
 

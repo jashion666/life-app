@@ -1,5 +1,6 @@
 package com.app.utils.http;
 
+import com.app.enums.HttpStateEnums;
 import org.apache.http.*;
 import org.apache.http.client.fluent.Request;
 import org.apache.http.entity.ContentType;
@@ -23,7 +24,7 @@ import static com.app.constant.CommonConstant.URL_PARAMETER_SEPARATOR;
  */
 public class HttpClientImpl implements HttpClient {
 
-    public ProxyInfo proxyInfo;
+    ProxyInfo proxyInfo;
 
     public HttpClientImpl() {
     }
@@ -73,6 +74,11 @@ public class HttpClientImpl implements HttpClient {
         return doExecute(request);
     }
 
+    @Override
+    public ProxyInfo getInUseProxy() {
+        return proxyInfo;
+    }
+
     private Request buildGet(String url, Map<String, String> paramMap, Map<String, String> headersMap) {
 
         if (paramMap != null) {
@@ -119,7 +125,8 @@ public class HttpClientImpl implements HttpClient {
     }
 
     private HttpResponse execute(Request request) throws IOException {
-        return request.execute().returnResponse();
+        // 超时时间为4秒
+        return request.connectTimeout(4000).execute().returnResponse();
     }
 
     /**

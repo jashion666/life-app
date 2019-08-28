@@ -1,10 +1,11 @@
 package app.miniprogram.http;
 
 import app.miniprogram.application.constant.Constants;
-import app.miniprogram.enums.HttpEnums;
-import app.miniprogram.mq.producer.ProxyProducer;
-import app.miniprogram.redis.RedisClient;
 import app.miniprogram.utils.CommonUtil;
+import com.alibaba.dubbo.config.annotation.Reference;
+import com.app.enums.HttpEnums;
+import com.app.redis.RedisClient;
+import com.app.service.craw.express.ProxyCrawlService;
 import com.app.utils.http.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,8 +23,9 @@ public class HttpProxyClient {
 
     @Autowired
     private RedisClient redisClient;
-    @Autowired
-    private ProxyProducer mqProxyProducer;
+
+    @Reference(version = "1.0.0")
+    private ProxyCrawlService proxyCrawlService;
 
     /**
      * 设置代理
@@ -31,9 +33,12 @@ public class HttpProxyClient {
      * @return HttpClient
      */
     public HttpClientExtension getHttpProxy() {
+        log.info("====>开始获取代理");
         List<ProxyInfo> proxyInfoList = CommonUtil.getProxyInfoList(redisClient);
         if (proxyInfoList.size() == 0) {
-            mqProxyProducer.send(Constants.MAX_IP_NUMBER);
+            log.info("<==== 代理ip失效，通知远程服务器获取新的ip");
+            // 调用RPC 爬取
+            proxyCrawlService.crawProxy(Constants.MAX_IP_NUMBER);
             return new HttpClientExtensionImpl();
         }
         Random random = new Random();
@@ -42,14 +47,26 @@ public class HttpProxyClient {
         // 如果该ip无效删除redis里的值.并且通知rabbitMQ重新获取指定数量的ip.
         // TODO 这块浪费时间
         if (!HttpUtils.checkProxy(info.getIp(), info.getPort())) {
-            log.info("代理ip失效，通知rabbitMQ获取新的ip");
+            log.info("<==== 代理ip失效，通知远程服务器获取新的ip");
             proxyInfoList.remove(info);
             redisClient.set(HttpEnums.PROXY_KEY.getValue(), proxyInfoList);
-            mqProxyProducer.send(Constants.WANTED_IP_NUMBER);
+            proxyCrawlService.crawProxy(Constants.WANTED_IP_NUMBER);
             return new HttpClientExtensionImpl();
         }
-        log.info("开启代理 代理信息为：" + info.toString());
+        log.info("<==== 代理获取成功 信息为：" + info.toString());
         return new HttpClientExtensionImpl(info);
+    }
+
+    /**
+     * 移除指定代理信息
+     */
+    public void removeTargetProxy(ProxyInfo proxyInfo) {
+        if (proxyInfo == null) {
+            return;
+        }
+        List<ProxyInfo> proxyInfoList = CommonUtil.getProxyInfoList(redisClient);
+        proxyInfoList.remove(proxyInfo);
+        redisClient.set(HttpEnums.PROXY_KEY.getValue(), proxyInfoList);
     }
 
 }

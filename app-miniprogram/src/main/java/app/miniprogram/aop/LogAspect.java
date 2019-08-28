@@ -23,11 +23,11 @@ public class LogAspect {
 
     @Before("pointcut()")
     public void before(JoinPoint point) {
-        log.debug("====> " + point.getTarget().getClass().getName() + point.getSignature().getName() + " 开始");
+        log.debug("====> " + point.getTarget().getClass().getName() + "." + point.getSignature().getName() + " 开始");
     }
 
     @After("pointcut()")
     public void after(JoinPoint point) {
-        log.debug("<==== " + point.getTarget().getClass().getName() + point.getSignature().getName() + " 结束");
+        log.debug("<==== " + point.getTarget().getClass().getName() + "." + point.getSignature().getName() + " 结束");
     }
 }

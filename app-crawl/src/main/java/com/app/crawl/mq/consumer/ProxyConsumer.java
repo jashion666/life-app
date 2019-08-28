@@ -1,9 +1,9 @@
-package app.miniprogram.mq.consumer;
+package com.app.crawl.mq.consumer;
 
-import app.miniprogram.application.constant.Constants;
-import app.miniprogram.enums.HttpEnums;
-import app.miniprogram.redis.RedisClient;
-import app.miniprogram.utils.CommonUtil;
+import com.app.constant.CommonConstant;
+import com.app.enums.HttpEnums;
+import com.app.redis.RedisClient;
+import com.app.utils.ApiUtil;
 import com.app.utils.http.CloudProxyCrawl;
 import com.app.utils.http.ProxyInfo;
 import com.app.utils.http.XiciProxyCrawl;
@@ -21,7 +21,7 @@ import java.util.List;
  * @date :2019/8/9.
  */
 @Component
-@RabbitListener(queues = {"proxy.direct.queue.1"})
+@RabbitListener(queues = {"proxy.direct.crawl.queue.1"})
 @Slf4j
 public class ProxyConsumer {
 
@@ -31,16 +31,17 @@ public class ProxyConsumer {
     @RabbitHandler
     public void process(Integer num) {
 
+        // 利用redis锁住
         if (!StringUtils.isEmpty(redisClient.get(HttpEnums.PROXY_PROCESS_KEY.getValue()))) {
             return;
         }
 
-        List<ProxyInfo> proxyInfoList = CommonUtil.getProxyInfoList(redisClient);
-        if (proxyInfoList.size() == Constants.MAX_IP_NUMBER) {
+        List<ProxyInfo> proxyInfoList = ApiUtil.getProxyInfoList(redisClient);
+        if (proxyInfoList.size() == CommonConstant.MAX_IP_NUMBER) {
             return;
         }
 
-        // 利用redis锁住，防止多线程同时操作（只锁住20分钟）
+        // 防止多线程同时操作（只锁住20分钟）
         redisClient.set(HttpEnums.PROXY_PROCESS_KEY.getValue(), "1", 1200L);
 
         log.info("爬取ip任务开始 ");
@@ -62,7 +63,7 @@ public class ProxyConsumer {
         // 一个线程处理完成之后再释放锁
         redisClient.remove(HttpEnums.PROXY_PROCESS_KEY.getValue());
         log.info("任务结束");
-
     }
+
 
 }

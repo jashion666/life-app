@@ -36,5 +36,13 @@ public interface ExpressService {
      */
     void saveExpress(ExpressEntity entity);
 
+    /**
+     * 删除历史记录
+     *
+     * @param uId    用户id
+     * @param postId 快递单号
+     * @throws Exception e
+     */
+    void delete(Integer uId, String postId) throws Exception;
 
 }

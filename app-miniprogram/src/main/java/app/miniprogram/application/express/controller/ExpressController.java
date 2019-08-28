@@ -28,7 +28,7 @@ public class ExpressController {
 
     @RequestMapping("test")
     public ResponseEntity<JsonResult> test() {
-        return new ResponseEntity<>(JsonResult.success("test"), HttpStatus.OK);
+        return new ResponseEntity<>(JsonResult.success("测试接口"), HttpStatus.OK);
     }
 
     /**
@@ -38,8 +38,16 @@ public class ExpressController {
      */
     @RequestMapping("history")
     public ResponseEntity<JsonResult> getHistory(@RequestParam("uId") Integer uId) {
-        List<ExpressEntity> historyList = expressService.getHistoryList(uId);
-        clearUnnecessaryDataList(historyList);
+        log.info("参数 uId:" + uId);
+        List<ExpressEntity> historyList;
+        try {
+            historyList = expressService.getHistoryList(uId);
+            clearUnnecessaryData(historyList);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new ResponseEntity<>(JsonResult.failed("查询失败"), HttpStatus.OK);
+        }
+
         return new ResponseEntity<>(JsonResult.success(historyList), HttpStatus.OK);
     }
 
@@ -54,7 +62,7 @@ public class ExpressController {
     public ResponseEntity<JsonResult> queryExpress(@RequestParam("uId") Integer uId,
                                                    @RequestParam("postId") String postId,
                                                    @RequestParam(value = "type", required = false) String type) {
-
+        log.info("参数 uId:" + uId + " postId:" + postId + " type:" + type);
         try {
             ExpressEntity entity = expressService.getExpressInfo(uId, postId.trim(), type);
             expressService.saveExpress(entity);
@@ -64,11 +72,31 @@ public class ExpressController {
         } catch (Exception e) {
             e.printStackTrace();
             log.error(e.getMessage());
-            return new ResponseEntity<>(JsonResult.failed("接口请求失败"), HttpStatus.OK);
+            return new ResponseEntity<>(JsonResult.failed("查询失败,请指定或者切换快递公司之后在进行尝试。"), HttpStatus.OK);
         }
     }
 
-    private void clearUnnecessaryDataList(List<ExpressEntity> list) {
+    /**
+     * 快递查询
+     *
+     * @param uId    用户id
+     * @param postId 快递单号
+     */
+    @RequestMapping("delete")
+    public ResponseEntity<JsonResult> delete(@RequestParam("uId") Integer uId,
+                                             @RequestParam("postId") String postId) {
+        log.info("参数： uId=>" + uId + " postId =>" + postId);
+        try {
+            expressService.delete(uId, postId);
+            return new ResponseEntity<>(JsonResult.success("删除成功"), HttpStatus.OK);
+        } catch (Exception e) {
+            e.printStackTrace();
+            log.error(e.getMessage());
+            return new ResponseEntity<>(JsonResult.failed("删除失败"), HttpStatus.OK);
+        }
+    }
+
+    private void clearUnnecessaryData(List<ExpressEntity> list) {
         list.forEach(this::clearUnnecessaryData);
     }
 

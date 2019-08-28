@@ -16,6 +16,7 @@
         <module>app-client</module>
         <module>app-admin</module>
         <module>app-miniprogram</module>
+        <module>app-crawl</module>
     </modules>
 
 </project>
