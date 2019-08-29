@@ -119,11 +119,11 @@ public class ExpressServiceImpl implements ExpressService {
      */
     private ExpressEntity getByApi(Integer uId, String postId, String type) throws Exception {
         TrajectoryEntity trajectoryEntity;
+        // 先用申请的接口去查询，查询失败再用网关去查
         try {
-            trajectoryEntity = gateWayExpressImpl.queryExpress(postId, type);
-        } catch (Exception e) {
-
             trajectoryEntity = apiExpressImpl.queryExpress(postId, type);
+        } catch (Exception e) {
+            trajectoryEntity = gateWayExpressImpl.queryExpress(postId, type);
         }
         ExpressEntity result = new ExpressEntity(uId, postId);
         result.setTrajectoryInfo(trajectoryEntity);
@@ -176,6 +176,9 @@ public class ExpressServiceImpl implements ExpressService {
         LocalDateTime lastUpdateTime = DateUtil.parseDateTime(
                 entity.getTrajectoryInfo().getData().get(0).getFtime(), DateConstants.FORMAT_YMDHMS);
         entity.setLastUpdateTime(lastUpdateTime);
+        if (Constants.EXPRESS_SENDING_FLAG.equals(entity.getCompleteFlag())) {
+            entity.setCompleteFlag(Constants.EXPRESS_NOT_COMPLETE_FLAG);
+        }
     }
 
     @Transactional(rollbackFor = Exception.class)

@@ -44,7 +44,7 @@ public class ExpressController {
             historyList = expressService.getHistoryList(uId);
             clearUnnecessaryData(historyList);
         } catch (Exception e) {
-            e.printStackTrace();
+            log.error(e.getMessage());
             return new ResponseEntity<>(JsonResult.failed("查询失败"), HttpStatus.OK);
         }
 
@@ -70,14 +70,13 @@ public class ExpressController {
             clearUnnecessaryData(entity);
             return new ResponseEntity<>(JsonResult.success(entity), HttpStatus.OK);
         } catch (Exception e) {
-            e.printStackTrace();
             log.error(e.getMessage());
             return new ResponseEntity<>(JsonResult.failed("查询失败,请指定或者切换快递公司之后在进行尝试。"), HttpStatus.OK);
         }
     }
 
     /**
-     * 快递查询
+     * 删除历史记录
      *
      * @param uId    用户id
      * @param postId 快递单号
@@ -90,7 +89,6 @@ public class ExpressController {
             expressService.delete(uId, postId);
             return new ResponseEntity<>(JsonResult.success("删除成功"), HttpStatus.OK);
         } catch (Exception e) {
-            e.printStackTrace();
             log.error(e.getMessage());
             return new ResponseEntity<>(JsonResult.failed("删除失败"), HttpStatus.OK);
         }

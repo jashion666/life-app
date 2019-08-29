@@ -3,20 +3,16 @@ package com.app.crawl.mq.consumer;
 import com.app.constant.CommonConstant;
 import com.app.enums.HttpEnums;
 import com.app.redis.RedisClient;
-import com.app.utils.ApiUtil;
-import com.app.utils.http.CloudProxyCrawl;
 import com.app.utils.http.HttpUtils;
 import com.app.utils.http.ProxyInfo;
-import com.app.utils.http.XiciProxyCrawl;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.tomcat.util.bcel.Const;
 import org.springframework.amqp.rabbit.annotation.RabbitHandler;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
-import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
@@ -42,48 +38,108 @@ public class ProxyConsumer {
     public void process(List<ProxyInfo> proxyInfoList) throws ExecutionException, InterruptedException {
 
         // 利用redis锁住
-        if (!StringUtils.isEmpty(redisClient.get(HttpEnums.PROXY_PROCESS_KEY.getValue()))) {
+        if (isLocked()) {
             return;
         }
 
         log.info("爬取ip任务开始 ");
-        // 防止多线程同时操作（只锁住20分钟）
-        redisClient.set(HttpEnums.PROXY_PROCESS_KEY.getValue(), "1", 1200L);
-        int allNumber = getInvalidIpNumber(proxyInfoList);
-        log.info("需要的ip数量为" + allNumber);
+        getRedisLock();
 
-        int cloudTaskNumber = Double.valueOf(Math.floor((double) allNumber / 2)).intValue();
-        int xiciTaskNumber = allNumber - cloudTaskNumber;
-        Future<List<ProxyInfo>> cloudFuture = threadCrawlTask.cloudTask(cloudTaskNumber, proxyInfoList);
+        removeInvalidIp(proxyInfoList);
+
+        execute(getInvalidIpNumber(proxyInfoList), proxyInfoList);
+
+        reset(proxyInfoList);
+
+        releaseRedisLock();
+        log.info("任务结束");
+    }
+
+    /**
+     * 开始执行爬取
+     *
+     * @param invalidIpNumber 失效ip的数量（需要爬取的数量）
+     * @param proxyInfoList   ip集合
+     * @throws ExecutionException   e
+     * @throws InterruptedException e
+     */
+    private void execute(int invalidIpNumber, List<ProxyInfo> proxyInfoList) throws ExecutionException, InterruptedException {
+
+        if (invalidIpNumber == 0) {
+            return;
+        }
+
+        // 因为废弃ip已经移除所以重新设置一下
+        reset(proxyInfoList);
+
+        int cloudTaskNumber = Double.valueOf(Math.floor((double) invalidIpNumber / 2)).intValue();
+        int xiciTaskNumber = invalidIpNumber - cloudTaskNumber;
+
         Future<List<ProxyInfo>> xiciFuture = threadCrawlTask.xiciTask(xiciTaskNumber, proxyInfoList);
+        Future<List<ProxyInfo>> cloudFuture = threadCrawlTask.cloudTask(cloudTaskNumber, proxyInfoList);
 
         for (; ; ) {
             if (cloudFuture.isDone() && xiciFuture.isDone()) {
-                proxyInfoList.addAll(cloudFuture.get());
-                proxyInfoList.addAll(xiciFuture.get());
+                if (cloudFuture.get() != null) {
+                    proxyInfoList.addAll(cloudFuture.get());
+                }
+                if (xiciFuture.get() != null) {
+                    proxyInfoList.addAll(xiciFuture.get());
+                }
                 break;
             }
             // 每隔两秒检查一次
             Thread.sleep(2000);
         }
-        redisClient.set(HttpEnums.PROXY_KEY.getValue(), proxyInfoList);
-        // 一个线程处理完成之后再释放锁
-        redisClient.remove(HttpEnums.PROXY_PROCESS_KEY.getValue());
-        log.info("任务结束");
     }
 
-    private int getInvalidIpNumber(List<ProxyInfo> proxyInfoList) {
-
-        int diff = CommonConstant.MAX_IP_NUMBER - proxyInfoList.size();
-        int num = 0;
-        for (ProxyInfo item : proxyInfoList) {
+    /**
+     * 移除不可用ip
+     */
+    private void removeInvalidIp(List<ProxyInfo> proxyInfoList) {
+        Iterator iterator = proxyInfoList.iterator();
+        while (iterator.hasNext()) {
+            ProxyInfo item = (ProxyInfo) iterator.next();
             if (!HttpUtils.checkProxy(item.getIp(), item.getPort())) {
+                iterator.remove();
                 log.info("代理：  " + item.toString() + "失效");
-                num++;
             }
         }
-        return num + diff;
     }
 
+    /**
+     * 获取失效ip的数量
+     */
+    private int getInvalidIpNumber(List<ProxyInfo> proxyInfoList) {
+        return CommonConstant.MAX_IP_NUMBER - proxyInfoList.size();
+    }
+
+    /**
+     * 获取redis锁
+     */
+    private boolean isLocked() {
+        return !StringUtils.isEmpty(redisClient.get(HttpEnums.PROXY_PROCESS_KEY.getValue()));
+    }
+
+    /**
+     * 获取redis锁
+     */
+    private void getRedisLock() {
+        redisClient.set(HttpEnums.PROXY_PROCESS_KEY.getValue(), "1", 1200L);
+    }
+
+    /**
+     * 释放redis锁
+     */
+    private void releaseRedisLock() {
+        redisClient.remove(HttpEnums.PROXY_PROCESS_KEY.getValue());
+    }
+
+    /**
+     * 重新将ip存入redis
+     */
+    private void reset(List<ProxyInfo> proxyInfoList) {
+        redisClient.set(HttpEnums.PROXY_KEY.getValue(), proxyInfoList);
+    }
 
 }

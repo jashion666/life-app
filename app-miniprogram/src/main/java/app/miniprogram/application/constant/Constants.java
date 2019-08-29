@@ -20,7 +20,12 @@ public class Constants extends CommonConstant {
     /**
      * 快递未完成flag
      */
-    public static final Integer EXPRESS_NOT_COMPLETE_FLAG = 0;
+    public static final String EXPRESS_NOT_COMPLETE_FLAG = "0";
+
+    /**
+     * 快递派送中flg
+     */
+    public static final String EXPRESS_SENDING_FLAG = "5";
 
     /**
      * 快递完成flag
@@ -50,5 +55,15 @@ public class Constants extends CommonConstant {
      * 更新标识.
      */
     public static final String UPDATE = "2";
+
+    /**
+     * 顺丰.
+     */
+    public static final String SPECIAL_EXPRESS_TYPE_SHUNFENG = "SF";
+
+    /**
+     * 京东.
+     */
+    public static final String SPECIAL_EXPRESS_TYPE_JD = "JD";
 
 }

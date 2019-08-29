@@ -125,8 +125,8 @@ public class HttpClientImpl implements HttpClient {
     }
 
     private HttpResponse execute(Request request) throws IOException {
-        // 超时时间为4秒
-        return request.connectTimeout(4000).execute().returnResponse();
+        // 超时时间为3秒
+        return request.connectTimeout(3000).execute().returnResponse();
     }
 
     /**

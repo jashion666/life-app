@@ -76,7 +76,7 @@ public class GateWayExpressImpl implements Express {
                 // 失败情况清除redis token再查询一次
                 return queryAgain(postId, type);
             } catch (Exception ex) {
-                // 如果再失败，则移除此代理
+                log.info("<==== ip代理失效，移除此代理");
                 httpProxyClient.removeTargetProxy(httpClientExtensionThreadLocal.get().getInUseProxy());
                 throw new Exception();
             }
@@ -236,7 +236,7 @@ public class GateWayExpressImpl implements Express {
         String wwwId = cookies.get(this.wwwIdKey);
 
         if (StringUtils.isEmpty(csrfToken) || StringUtils.isEmpty(wwwId)) {
-            throw new IllegalArgumentException("cookie获取失败，请使用api方式获取");
+            throw new IllegalArgumentException("cookie获取失败");
         }
 
         return this.csrfTokenKey + "=" + csrfToken + ";" + this.wwwIdKey + "=" + wwwId;

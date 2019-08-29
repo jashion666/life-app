@@ -26,7 +26,10 @@ public class ThreadCrawlTask {
      */
     @Async("asyncExecutor")
     public Future<List<ProxyInfo>> cloudTask(Integer wantNumber, List<ProxyInfo> excludeProxyList) {
-        log.info("开启云代理爬取线程");
+        if (wantNumber == 0) {
+            return new AsyncResult<>(null);
+        }
+        log.info("开启云代理爬取线程 爬取数量" + wantNumber);
         CloudProxyCrawl proxyCrawl = new CloudProxyCrawl(wantNumber, excludeProxyList);
         return new AsyncResult<>(proxyCrawl.startCrawler());
     }
@@ -38,7 +41,10 @@ public class ThreadCrawlTask {
      */
     @Async("asyncExecutor")
     public Future<List<ProxyInfo>> xiciTask(Integer wantNumber, List<ProxyInfo> excludeProxyList) {
-        log.info("开启西刺代理爬取线程");
+        if (wantNumber == 0) {
+            return new AsyncResult<>(null);
+        }
+        log.info("开启西刺代理爬取线程 爬取数量" + wantNumber);
         XiciProxyCrawl xiciProxyCrawl = new XiciProxyCrawl(wantNumber, excludeProxyList);
         return new AsyncResult<>(xiciProxyCrawl.startCrawler());
     }
