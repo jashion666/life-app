@@ -67,19 +67,13 @@ public class GateWayExpressImpl implements Express {
 
     @Override
     public TrajectoryEntity queryExpress(String postId, String type) throws Exception {
+        // 获取http工具类
         httpClientExtensionThreadLocal.set(httpProxyClient.getHttpProxy());
         try {
             log.info("====> 快递查询开始");
             return doQuery(postId, type);
         } catch (Exception e) {
-            try {
-                // 失败情况清除redis token再查询一次
-                return queryAgain(postId, type);
-            } catch (Exception ex) {
-                log.info("<==== ip代理失效，移除此代理");
-                httpProxyClient.removeTargetProxy(httpClientExtensionThreadLocal.get().getInUseProxy());
-                throw new Exception();
-            }
+            return queryAgain(postId, type);
         } finally {
             log.info("<==== 快递查询结束");
             httpClientExtensionThreadLocal.remove();
@@ -135,9 +129,14 @@ public class GateWayExpressImpl implements Express {
      */
     private TrajectoryEntity queryAgain(String postId, String type) throws Exception {
         log.info("首次查询失败，清除缓存再次查询");
-        // 清除key再查询
         redisClient.remove(expressRedisKey);
-        return doQuery(postId, type);
+        try {
+            return doQuery(postId, type);
+        } catch (Exception ex) {
+            log.info("<==== ip代理失效，移除此代理");
+            httpProxyClient.removeTargetProxy(httpClientExtensionThreadLocal.get().getInUseProxy());
+            throw new Exception();
+        }
     }
 
     /**
