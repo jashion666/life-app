@@ -70,12 +70,12 @@ public class GateWayExpressImpl implements Express {
         // 获取http工具类
         httpClientExtensionThreadLocal.set(httpProxyClient.getHttpProxy());
         try {
-            log.info("====> 快递查询开始");
+            log.info("====> 网关快递查询开始");
             return doQuery(postId, type);
         } catch (Exception e) {
             return queryAgain(postId, type);
         } finally {
-            log.info("<==== 快递查询结束");
+            log.info("<==== 网关快递查询结束");
             httpClientExtensionThreadLocal.remove();
         }
     }
@@ -133,7 +133,6 @@ public class GateWayExpressImpl implements Express {
         try {
             return doQuery(postId, type);
         } catch (Exception ex) {
-            log.info("<==== ip代理失效，移除此代理");
             httpProxyClient.removeTargetProxy(httpClientExtensionThreadLocal.get().getInUseProxy());
             throw new Exception();
         }

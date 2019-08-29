@@ -71,7 +71,7 @@ public class ExpressController {
             return new ResponseEntity<>(JsonResult.success(entity), HttpStatus.OK);
         } catch (Exception e) {
             log.error(e.getMessage());
-            return new ResponseEntity<>(JsonResult.failed("查询失败,请指定或者切换快递公司之后在进行尝试。"), HttpStatus.OK);
+            return new ResponseEntity<>(JsonResult.failed("查询失败,请检查快递单号以及快递公司是否正确。"), HttpStatus.OK);
         }
     }
 

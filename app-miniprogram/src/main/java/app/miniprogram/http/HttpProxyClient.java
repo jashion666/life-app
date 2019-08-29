@@ -67,6 +67,7 @@ public class HttpProxyClient {
         if (proxyInfo == null) {
             return;
         }
+        log.info("ip代理失效，移除此代理 信息为" + proxyInfo.toString());
         List<ProxyInfo> proxyInfoList = CommonUtil.getProxyInfoList(redisClient);
         proxyInfoList.remove(proxyInfo);
         redisClient.set(HttpEnums.PROXY_KEY.getValue(), proxyInfoList);

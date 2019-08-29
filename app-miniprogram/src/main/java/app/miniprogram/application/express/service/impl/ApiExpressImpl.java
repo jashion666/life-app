@@ -82,7 +82,8 @@ public class ApiExpressImpl implements Express {
 
     private void checkResult(Map<String, Object> ret) throws Exception {
         if (!(boolean) ret.get("Success")) {
-            throw new Exception("查询失败，请换成网关查询");
+            log.info("api查询失败，请换成网关查询");
+            throw new Exception();
         }
     }
 
