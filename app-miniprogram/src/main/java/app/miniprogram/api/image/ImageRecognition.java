@@ -33,11 +33,11 @@ public class ImageRecognition {
     private Map<String, Object> doRecognition(String img) {
         Map<String, Object> resMap = new HashMap<>(16);
         try {
-            String url = IMAGE_RECOGNITION_API_URL + "access_token=24.93fadf11a8a551b73ad653447c71ff8d.2592000.1563432014.282335-16263178";
+            String url = IMAGE_RECOGNITION_API_URL + "access_token=24.890172baf682235f2eb8aabcbdc7744b.2592000.1569671315.282335-16263178";
 
             Map<String, String> param = new HashMap<>(16);
             param.put("image", img);
-            param.put("language_type", LANGUAGE_TYPE);
+//            param.put("language_type", LANGUAGE_TYPE);
             Map<String, String> headers = new HashMap<>(16);
             headers.put("Content-Type", "application/x-www-form-urlencoded");
 

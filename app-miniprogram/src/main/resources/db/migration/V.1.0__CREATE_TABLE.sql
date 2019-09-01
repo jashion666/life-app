@@ -1,8 +1,12 @@
 DROP TABLE IF EXISTS `t_user`;
 CREATE TABLE `t_user` (
   `u_id` int(11) NOT NULL AUTO_INCREMENT,
-  `username` varchar(500) NOT NULL,
+  `open_id` varchar (200) NOT NULL COMMENT '微信用户唯一标识' ,
+  `session_key` varchar (200) NOT NULL COMMENT '会话密钥' ,
+  `username` varchar(500) DEFAULT NULL,
   `phone` varchar(45) DEFAULT NULL,
+  `insert_time` datetime NOT NULL COMMENT '插入时间',
+  `update_time` datetime NOT NULL COMMENT '更新时间',
   PRIMARY KEY (`u_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 

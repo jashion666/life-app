@@ -5,9 +5,7 @@ import app.miniprogram.application.express.entity.ExpressTypeEntity;
 import app.miniprogram.application.express.entity.TrajectoryEntity;
 import app.miniprogram.application.express.service.Express;
 import app.miniprogram.http.HttpProxyClient;
-import app.miniprogram.utils.CommonUtil;
 import app.miniprogram.utils.JsonUtil;
-import com.alibaba.fastjson.JSONObject;
 import com.app.redis.RedisClient;
 import com.app.utils.http.*;
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -40,25 +38,14 @@ public class GateWayExpressImpl implements Express {
     @Value("${kuaidi100.api.url}")
     private String apiUrl;
 
-    @Value("${kuaidi100.api.type.url}")
-    private String apiExpressTypeUrl;
-
-    @Value("${kuaidi100.cookie.key1}")
-    private String csrfTokenKey;
-
-    @Value("${kuaidi100.cookie.key2}")
-    private String wwwIdKey;
-
     @Value("${kuaidi100.redis.key}")
     private String expressRedisKey;
 
-    @Value("${kuaidi100.redis.expire.time}")
-    private Long redisExpireTime;
-
     private final RedisClient redisClient;
 
-    @Autowired
-    private HttpProxyClient httpProxyClient;
+    private final ExpressUtil expressUtil;
+
+    private final HttpProxyClient httpProxyClient;
 
     /**
      * 防止并线程出现问题，使用ThreadLocal
@@ -78,29 +65,6 @@ public class GateWayExpressImpl implements Express {
             log.info("<==== 网关快递查询结束");
             httpClientExtensionThreadLocal.remove();
         }
-    }
-
-    /**
-     * 获取快递类型
-     */
-    @Override
-    public List<ExpressTypeEntity> getExpressTypeList(String postId) throws IOException {
-
-        log.info("查询快递类型");
-        Map<String, String> param1 = new HashMap<>(4);
-        param1.put("resultv2", "1");
-        param1.put("text", postId);
-        String ret = httpClientExtensionThreadLocal.get().post(this.apiExpressTypeUrl, param1);
-
-        Map<String, Object> map = JSONObject.parseObject(ret);
-
-        if (!map.containsKey("auto")) {
-            throw new IllegalArgumentException("获取快递类型失败 结果：" + map);
-        }
-        ret = JSONObject.toJSONString(map.get("auto"));
-        log.info("快递类型结果：" + ret);
-        return new JsonUtil().getCustomObjectMapper().readValue(ret, new TypeReference<List<ExpressTypeEntity>>() {
-        });
     }
 
     /**
@@ -145,7 +109,7 @@ public class GateWayExpressImpl implements Express {
      * @return 查询结果
      */
     private TrajectoryEntity queryAndGetType(String postId) throws IOException {
-        List<ExpressTypeEntity> typeList = getExpressTypeList(postId);
+        List<ExpressTypeEntity> typeList = expressUtil.getTypeListByKd100(postId);
         return queryByWeb(postId, typeList.get(0).getComCode());
     }
 
@@ -156,7 +120,7 @@ public class GateWayExpressImpl implements Express {
         log.info("执行查询 参数==> postId：" + postId + " type: " + type);
 
         Map<String, String> headers = new HashMap<>(16);
-        headers.put("Cookie", getCookie(url));
+        headers.put("Cookie", expressUtil.getCookie(url));
         headers.put("Referer", url);
         headers.put("User-Agent", apiAgent);
 
@@ -171,10 +135,6 @@ public class GateWayExpressImpl implements Express {
         });
         log.debug("查询结果为==> " + ret);
         return trajectoryEntity;
-    }
-
-    private String getCookie(String url) {
-        return Optional.ofNullable(getCookiesInRedis()).orElseGet(() -> getCookiesInWeb(url));
     }
 
     /**
@@ -205,43 +165,12 @@ public class GateWayExpressImpl implements Express {
         }
     }
 
-    /**
-     * 获取web的cookie
-     */
-    private String getCookiesInWeb(String url) {
-        Map<String, String> cookiesMap = httpClientExtensionThreadLocal.get().getCookies(url);
-        String cookie = joinCookie(cookiesMap);
-        log.info("redis 内的cookie过期 添加cookie的值到Redis中。");
-        // redis存放时间为1小时
-        this.redisClient.set(expressRedisKey, cookiesMap, redisExpireTime);
-        return cookie;
-    }
-
-    /**
-     * 获取web的cookie
-     */
-    @SuppressWarnings("unchecked")
-    private String getCookiesInRedis() {
-        Map<String, String> cookiesMap = (Map<String, String>) redisClient.get(expressRedisKey);
-        if (cookiesMap == null || cookiesMap.size() == 0) {
-            return null;
-        }
-        return joinCookie(cookiesMap);
-    }
-
-    private String joinCookie(Map<String, String> cookies) {
-        String csrfToken = cookies.get(this.csrfTokenKey);
-        String wwwId = cookies.get(this.wwwIdKey);
-
-        if (StringUtils.isEmpty(csrfToken) || StringUtils.isEmpty(wwwId)) {
-            throw new IllegalArgumentException("cookie获取失败");
-        }
-
-        return this.csrfTokenKey + "=" + csrfToken + ";" + this.wwwIdKey + "=" + wwwId;
-    }
-
     @Autowired
-    public GateWayExpressImpl(RedisClient redisClient) {
+    public GateWayExpressImpl(RedisClient redisClient,
+                              ExpressUtil expressUtil,
+                              HttpProxyClient httpProxyClient) {
         this.redisClient = redisClient;
+        this.expressUtil = expressUtil;
+        this.httpProxyClient = httpProxyClient;
     }
 }

@@ -2,10 +2,8 @@ package app.miniprogram.aop;
 
 import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.JoinPoint;
-import org.aspectj.lang.annotation.After;
-import org.aspectj.lang.annotation.Aspect;
-import org.aspectj.lang.annotation.Before;
-import org.aspectj.lang.annotation.Pointcut;
+import org.aspectj.lang.ProceedingJoinPoint;
+import org.aspectj.lang.annotation.*;
 import org.springframework.stereotype.Component;
 
 /**
@@ -29,5 +27,11 @@ public class LogAspect {
     @After("pointcut()")
     public void after(JoinPoint point) {
         log.debug("<==== " + point.getTarget().getClass().getName() + "." + point.getSignature().getName() + " 结束");
+    }
+
+    @Around("pointcut()")
+    public void around(ProceedingJoinPoint pjp) throws Throwable {
+        String name = pjp.getTarget().getClass().getSimpleName();
+        String method = pjp.getSignature().getName();
     }
 }

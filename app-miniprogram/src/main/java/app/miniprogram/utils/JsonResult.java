@@ -89,6 +89,17 @@ public class JsonResult<T> implements Serializable {
     }
 
     @SuppressWarnings("unchecked")
+    public static JsonResult failedAccessDenied(String message) {
+        JsonResult result = new JsonResult();
+        List<String> msgList = new ArrayList<>();
+        msgList.add(message);
+        result.setState(ResultCodeEnum.FORBIDDEN_CODE.getCode());
+        result.setMsgList(msgList);
+        result.setResult(null);
+        return result;
+    }
+
+    @SuppressWarnings("unchecked")
     public static <T> JsonResult warn(String message, T data) {
         JsonResult result = new JsonResult();
         List<String> msgList = new ArrayList<>();

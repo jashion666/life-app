@@ -22,11 +22,4 @@ public interface Express {
      */
     TrajectoryEntity queryExpress(String postId, String type) throws Exception;
 
-    /**
-     * 快递公司查询
-     *
-     * @param postId 快递单号
-     * @return 公司集合
-     */
-    List<ExpressTypeEntity> getExpressTypeList(String postId) throws IOException;
 }
