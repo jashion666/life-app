@@ -24,7 +24,11 @@ public enum ResultCodeEnum {
     /**
      * api failed code.
      */
-    FORBIDDEN_CODE(403);
+    FORBIDDEN_CODE(403),
+    /**
+     * 没有权限
+     */
+    UNAUTHORIZED(401);
 
     private final int code;
 

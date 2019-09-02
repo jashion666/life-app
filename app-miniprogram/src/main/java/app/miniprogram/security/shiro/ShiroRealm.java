@@ -2,6 +2,7 @@ package app.miniprogram.security.shiro;
 
 import app.miniprogram.security.jwt.JwtService;
 import app.miniprogram.security.jwt.JwtToken;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.shiro.authc.AuthenticationException;
 import org.apache.shiro.authc.AuthenticationInfo;
 import org.apache.shiro.authc.AuthenticationToken;
@@ -18,6 +19,7 @@ import org.springframework.util.StringUtils;
  * @author :wkh.
  * @date :2019/8/30.
  */
+@Slf4j
 public class ShiroRealm extends AuthorizingRealm {
 
     @Autowired
@@ -45,6 +47,7 @@ public class ShiroRealm extends AuthorizingRealm {
         String jwtToken = (String) token.getCredentials();
         String wxOpenId = jwtService.getWxOpenIdByToken(jwtToken);
         String sessionKey = jwtService.getSessionKeyByToken(jwtToken);
+        log.info("认证用户信息开始 openId为:" + wxOpenId);
         if (StringUtils.isEmpty(wxOpenId)) {
             throw new AuthenticationException("无效的用户信息");
         }
@@ -55,6 +58,7 @@ public class ShiroRealm extends AuthorizingRealm {
             throw new AuthenticationException("认证失败");
         }
 
+        log.info("认证成功");
         this.setCredentialsMatcher(credentialsMatcher());
         return new SimpleAuthenticationInfo(token, token, getName());
     }

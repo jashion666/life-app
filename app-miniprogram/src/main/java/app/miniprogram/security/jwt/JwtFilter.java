@@ -1,7 +1,8 @@
 package app.miniprogram.security.jwt;
 
+import app.miniprogram.utils.JsonResult;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.shiro.authc.AuthenticationException;
-import org.apache.shiro.authc.AuthenticationToken;
 import org.apache.shiro.web.filter.authc.BasicHttpAuthenticationFilter;
 import org.springframework.http.HttpStatus;
 import org.springframework.util.StringUtils;
@@ -11,6 +12,8 @@ import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.io.PrintWriter;
 
 /**
  * 所有的请求都会先经过Filter,重写鉴权的方法。
@@ -18,6 +21,7 @@ import javax.servlet.http.HttpServletResponse;
  * @author :wkh.
  * @date :2019/8/30.
  */
+@Slf4j
 public class JwtFilter extends BasicHttpAuthenticationFilter {
 
     /**
@@ -39,9 +43,28 @@ public class JwtFilter extends BasicHttpAuthenticationFilter {
     protected boolean isAccessAllowed(ServletRequest request, ServletResponse response, Object mappedValue) {
         if (isLoginAttempt(request, response)) {
             JwtToken token = new JwtToken(getAuthzHeader(request));
-            getSubject(request, response).login(token);
+            HttpServletResponse httpServletResponse = (HttpServletResponse) response;
+            try {
+                getSubject(request, response).login(token);
+            } catch (AuthenticationException e) {
+                log.error(e.getMessage());
+                setErrorResponse(httpServletResponse, e);
+                return false;
+            }
+
         }
         return true;
+    }
+
+    private void setErrorResponse(HttpServletResponse response, Throwable ex) {
+        response.setContentType("application/json; charset=utf-8");
+        response.setStatus(HttpStatus.UNAUTHORIZED.value());
+        response.setCharacterEncoding("UTF-8");
+        try (PrintWriter out = response.getWriter()) {
+            out.append(JsonResult.toJson(JsonResult.failedAccessDenied(ex.getMessage())));
+        } catch (IOException e) {
+            throw new RuntimeException("直接返回Response信息出现IOException异常:" + e.getMessage());
+        }
     }
 
     /**

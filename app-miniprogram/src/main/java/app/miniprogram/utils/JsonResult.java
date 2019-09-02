@@ -1,6 +1,8 @@
 package app.miniprogram.utils;
 
 import app.miniprogram.enums.ResultCodeEnum;
+import com.alibaba.fastjson.JSON;
+import com.google.gson.JsonObject;
 import lombok.Data;
 
 import java.io.Serializable;
@@ -61,7 +63,7 @@ public class JsonResult<T> implements Serializable {
     }
 
     @SuppressWarnings("unchecked")
-    public static JsonResult failed() {
+    public static <T> JsonResult failed() {
         JsonResult result = new JsonResult();
         result.setState(ResultCodeEnum.RESULT_FAILED_CODE.getCode());
         result.setResult(null);
@@ -69,7 +71,7 @@ public class JsonResult<T> implements Serializable {
     }
 
     @SuppressWarnings("unchecked")
-    public static JsonResult failed(String message) {
+    public static <T> JsonResult failed(String message) {
         JsonResult result = new JsonResult();
         List<String> msgList = new ArrayList<>();
         msgList.add(message);
@@ -93,7 +95,7 @@ public class JsonResult<T> implements Serializable {
         JsonResult result = new JsonResult();
         List<String> msgList = new ArrayList<>();
         msgList.add(message);
-        result.setState(ResultCodeEnum.FORBIDDEN_CODE.getCode());
+        result.setState(ResultCodeEnum.UNAUTHORIZED.getCode());
         result.setMsgList(msgList);
         result.setResult(null);
         return result;
@@ -108,6 +110,10 @@ public class JsonResult<T> implements Serializable {
         result.setMsgList(msgList);
         result.setResult(data);
         return result;
+    }
+
+    public static String toJson(JsonResult ret) {
+        return JSON.toJSONString(ret);
     }
 
     @Override

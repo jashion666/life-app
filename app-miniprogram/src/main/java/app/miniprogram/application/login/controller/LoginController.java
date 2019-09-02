@@ -25,10 +25,11 @@ public class LoginController {
     @RequestMapping("/token")
     public ResponseEntity<JsonResult> wxLogin(@Param("code") String code) {
         try {
+            log.info("token获取开始");
             return new ResponseEntity<>(JsonResult.success(accountService.getWxLoginToken(code)), HttpStatus.OK);
         } catch (Exception e) {
             log.info(e.getMessage());
-            e.printStackTrace();
+            log.info("获取token失败");
             return new ResponseEntity<>(JsonResult.failed("获取token失败"), HttpStatus.OK);
         }
     }

@@ -101,7 +101,10 @@ public class ExpressServiceImpl implements ExpressService {
         // 将db中json物流轨迹转换成实体类返回前台
         entity.setData(CommonUtil.parseExpressData(result.getTrajectory()));
         result.setTrajectoryInfo(entity);
-
+        // 设置快递图片地址
+        result.setImgUrl(cdn + result.getType() + Constants.PNG);
+        // 设置快递类型文字
+        result.setTypeText(Objects.requireNonNull(ExpressEnums.getInstance(result.getType())).getCodeValue());
         return result;
     }
 

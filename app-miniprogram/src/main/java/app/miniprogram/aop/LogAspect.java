@@ -29,9 +29,4 @@ public class LogAspect {
         log.debug("<==== " + point.getTarget().getClass().getName() + "." + point.getSignature().getName() + " 结束");
     }
 
-    @Around("pointcut()")
-    public void around(ProceedingJoinPoint pjp) throws Throwable {
-        String name = pjp.getTarget().getClass().getSimpleName();
-        String method = pjp.getSignature().getName();
-    }
 }
