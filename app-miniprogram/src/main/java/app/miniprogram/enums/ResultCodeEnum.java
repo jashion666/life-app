@@ -28,7 +28,11 @@ public enum ResultCodeEnum {
     /**
      * 没有权限
      */
-    UNAUTHORIZED(401);
+    UNAUTHORIZED(401),
+    /**
+     * token过期
+     */
+    TOKEN_EXPIRE(9999);
 
     private final int code;
 

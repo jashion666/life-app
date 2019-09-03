@@ -102,6 +102,17 @@ public class JsonResult<T> implements Serializable {
     }
 
     @SuppressWarnings("unchecked")
+    public static JsonResult failedWithCode(String message, int codeStatus) {
+        JsonResult result = new JsonResult();
+        List<String> msgList = new ArrayList<>();
+        msgList.add(message);
+        result.setState(codeStatus);
+        result.setMsgList(msgList);
+        result.setResult(null);
+        return result;
+    }
+
+    @SuppressWarnings("unchecked")
     public static <T> JsonResult warn(String message, T data) {
         JsonResult result = new JsonResult();
         List<String> msgList = new ArrayList<>();

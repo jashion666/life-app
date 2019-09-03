@@ -50,25 +50,31 @@ public class ApiExpressImpl implements Express {
     public TrajectoryEntity queryExpress(String postId, String kd100Type) throws Exception {
 
         log.info("===> api查询");
-        String kdNiaoType = getType(postId, kd100Type);
+        // 查询快递类型
+        kd100Type = searchType(postId, kd100Type);
+        // 将快递类型转换为快递鸟可用的类型 （因为快递100的类型和快递鸟的不一样）
+        String kdNiaoType = getType(kd100Type);
+        // 请求api，返回结果
         Map<String, Object> ret = doQuery(postId, kdNiaoType);
+        // 验证返回结果
         checkResult(ret);
+        // 将返回结果封装到实体类
+        TrajectoryEntity result = analysisResult(ret, kd100Type);
         log.info("<=== api快递查询结束");
-
-        return analysisResult(ret, kd100Type);
+        return result;
     }
 
-    private String getType(String postId, String type) throws IOException {
-
-        if (StringUtils.isEmpty(type)) {
-            type = expressUtil.getTypeListByKd100(postId).get(0).getComCode();
-        }
+    private String getType(String type) {
         // 除了京东顺丰和为空的code，其他都从网关查
         type = Objects.requireNonNull(KdNiaoExpressEnums.getInstance(type)).getCodeValue();
         if (Constants.SPECIAL_EXPRESS_TYPE_SHUNFENG.equals(type) || Constants.SPECIAL_EXPRESS_TYPE_JD.equals(type)) {
             throw new IllegalArgumentException();
         }
         return type;
+    }
+
+    private String searchType(String postId, String type) throws IOException {
+        return StringUtils.isEmpty(type) ? expressUtil.getTypeListByKd100(postId).get(0).getComCode() : type;
     }
 
     private Map<String, Object> doQuery(String postId, String type) throws Exception {

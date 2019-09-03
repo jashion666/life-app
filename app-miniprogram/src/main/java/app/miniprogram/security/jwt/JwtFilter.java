@@ -1,8 +1,10 @@
 package app.miniprogram.security.jwt;
 
+import app.miniprogram.enums.ResultCodeEnum;
 import app.miniprogram.utils.JsonResult;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shiro.authc.AuthenticationException;
+import org.apache.shiro.authc.ExpiredCredentialsException;
 import org.apache.shiro.web.filter.authc.BasicHttpAuthenticationFilter;
 import org.springframework.http.HttpStatus;
 import org.springframework.util.StringUtils;
@@ -46,9 +48,10 @@ public class JwtFilter extends BasicHttpAuthenticationFilter {
             HttpServletResponse httpServletResponse = (HttpServletResponse) response;
             try {
                 getSubject(request, response).login(token);
-            } catch (AuthenticationException e) {
+            } catch (Exception e) {
                 log.error(e.getMessage());
-                setErrorResponse(httpServletResponse, e);
+                int codeStatus = e instanceof ExpiredCredentialsException ? ResultCodeEnum.TOKEN_EXPIRE.getCode() : ResultCodeEnum.UNAUTHORIZED.getCode();
+                setErrorResponse(httpServletResponse, e, codeStatus);
                 return false;
             }
 
@@ -56,12 +59,12 @@ public class JwtFilter extends BasicHttpAuthenticationFilter {
         return true;
     }
 
-    private void setErrorResponse(HttpServletResponse response, Throwable ex) {
+    private void setErrorResponse(HttpServletResponse response, Throwable ex, int codeStatus) {
         response.setContentType("application/json; charset=utf-8");
         response.setStatus(HttpStatus.UNAUTHORIZED.value());
         response.setCharacterEncoding("UTF-8");
         try (PrintWriter out = response.getWriter()) {
-            out.append(JsonResult.toJson(JsonResult.failedAccessDenied(ex.getMessage())));
+            out.append(JsonResult.toJson(JsonResult.failedWithCode(ex.getMessage(), codeStatus)));
         } catch (IOException e) {
             throw new RuntimeException("直接返回Response信息出现IOException异常:" + e.getMessage());
         }

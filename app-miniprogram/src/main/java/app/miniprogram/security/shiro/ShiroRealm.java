@@ -3,10 +3,7 @@ package app.miniprogram.security.shiro;
 import app.miniprogram.security.jwt.JwtService;
 import app.miniprogram.security.jwt.JwtToken;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.shiro.authc.AuthenticationException;
-import org.apache.shiro.authc.AuthenticationInfo;
-import org.apache.shiro.authc.AuthenticationToken;
-import org.apache.shiro.authc.SimpleAuthenticationInfo;
+import org.apache.shiro.authc.*;
 import org.apache.shiro.authc.credential.CredentialsMatcher;
 import org.apache.shiro.authz.AuthorizationInfo;
 import org.apache.shiro.authz.SimpleAuthorizationInfo;
@@ -49,13 +46,14 @@ public class ShiroRealm extends AuthorizingRealm {
         String sessionKey = jwtService.getSessionKeyByToken(jwtToken);
         log.info("认证用户信息开始 openId为:" + wxOpenId);
         if (StringUtils.isEmpty(wxOpenId)) {
-            throw new AuthenticationException("无效的用户信息");
+            throw new UnknownAccountException("无效的用户信息");
         }
         if (StringUtils.isEmpty(sessionKey)) {
-            throw new AuthenticationException("无效的回话信息");
+            throw new IncorrectCredentialsException("无效的回话信息");
         }
         if (!jwtService.verifyToken(jwtToken)) {
-            throw new AuthenticationException("认证失败");
+            log.info("用户token可能过期");
+            throw new ExpiredCredentialsException("认证失败");
         }
 
         log.info("认证成功");
