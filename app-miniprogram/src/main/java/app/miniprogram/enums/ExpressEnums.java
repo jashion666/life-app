@@ -19,7 +19,7 @@ public enum ExpressEnums {
     /**
      * 安信达快递.
      */
-    ANXINDAKUAIXI("anxindakuaixi", "安信达快递"),
+    ANXINDAKUAIXI("exfresh", "安鲜达"),
     /**
      * 彪记快递.
      */

@@ -18,6 +18,10 @@ public enum KdNiaoExpressEnums {
      */
     ANJIE("anjie", "AJ"),
     /**
+     * 安鲜达.
+     */
+    AXD("exfresh", "AXD"),
+    /**
      * bht.
      */
     BHT("bht", "BHT"),

@@ -3,7 +3,6 @@ package app.miniprogram.security.jwt;
 import app.miniprogram.enums.ResultCodeEnum;
 import app.miniprogram.utils.JsonResult;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.shiro.authc.AuthenticationException;
 import org.apache.shiro.authc.ExpiredCredentialsException;
 import org.apache.shiro.web.filter.authc.BasicHttpAuthenticationFilter;
 import org.springframework.http.HttpStatus;
