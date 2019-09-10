@@ -76,7 +76,8 @@ public class RecognitionServiceImpl implements RecognitionService {
         Object key = redisClient.get(RedisKeyConstants.BAIDU_API_ACCESS_TOKEN);
         if (ObjectUtils.isEmpty(key)) {
             ret = getAccessToken();
-            redisClient.set(RedisKeyConstants.BAIDU_API_ACCESS_TOKEN, ret);
+            // 10天获取一次key
+            redisClient.set(RedisKeyConstants.BAIDU_API_ACCESS_TOKEN, ret, 864000L);
         } else {
             ret = (String) key;
         }

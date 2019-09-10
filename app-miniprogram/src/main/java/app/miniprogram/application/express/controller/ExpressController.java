@@ -60,7 +60,6 @@ public class ExpressController {
      * @param type   快递类型（非必须）
      * @return 查询结果
      */
-    @RequiresAuthentication
     @RequestMapping("query")
     public ResponseEntity<JsonResult> queryExpress(@RequestParam("uId") Integer uId,
                                                    @RequestParam("postId") String postId,
