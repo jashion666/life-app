@@ -1,24 +1,20 @@
 package app.miniprogram.application.recognition.service.impl;
 
+import app.miniprogram.api.ocr.GeneralBasic;
 import app.miniprogram.application.constant.RedisKeyConstants;
 import app.miniprogram.application.recognition.entity.RecognitionEntity;
 import app.miniprogram.application.recognition.service.RecognitionService;
-import app.miniprogram.utils.JsonUtil;
+import app.miniprogram.security.exception.AppException;
 import com.app.redis.RedisClient;
 import com.app.utils.encrypt.EncryptUtil;
-import com.app.utils.http.HttpClient;
-import com.app.utils.http.HttpClientImpl;
-import com.fasterxml.jackson.core.type.TypeReference;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ObjectUtils;
-import org.springframework.util.StringUtils;
 
 import java.io.InputStream;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * @author :wkh.
@@ -37,38 +33,46 @@ public class RecognitionServiceImpl implements RecognitionService {
     @Value("${baidubce.oauth.token.api.url}")
     private String tokenApiUrl;
 
-    @Value("${img.general.basic.api.url}")
+    @Value("${img.recogition.universal.recognition.url}")
     private String imgGeneralBasicApiUrl;
 
+    private final RedisClient redisClient;
+
     @Autowired
-    private RedisClient redisClient;
+    public RecognitionServiceImpl(RedisClient redisClient) {
+        this.redisClient = redisClient;
+    }
 
     @Override
     public String getAccessToken() throws Exception {
-        return getToken(clientId, clientSecret);
+        log.info("获取百度api Access Token");
+        GeneralBasic generalBasic = new GeneralBasic();
+        return generalBasic.getToken(clientId, clientSecret, tokenApiUrl);
     }
 
     @Override
     public RecognitionEntity extractText(InputStream inputStream, String languageType) throws Exception {
         String imgBase64Text = EncryptUtil.imageToBase64Str(inputStream);
-        RecognitionEntity result = doExtract(imgBase64Text, languageType);
-        log.debug("识别结果为" + result.toString());
+
+        GeneralBasic generalBasic = new GeneralBasic();
+
+        RecognitionEntity result = generalBasic.doExtract(imgBase64Text, languageType, getAccessTokenInRedis(), imgGeneralBasicApiUrl);
+        checkResult(result);
+        String wordsResult = result.getWords_result()
+                .stream()
+                .map(RecognitionEntity.WordsResultBean::getWords)
+                .collect(Collectors.joining("\n"));
+
+        result.setWordsResult(wordsResult);
+        result.setCount(wordsResult.replaceAll("\n", "").length());
+        result.setWords_result(null);
         return result;
     }
 
-    private RecognitionEntity doExtract(String img, String languageType) throws Exception {
-        Map<String, String> param = new HashMap<>(4);
-        param.put("access_token", getAccessTokenInRedis());
-        param.put("image", img);
-        if (!StringUtils.isEmpty(languageType)) {
-            param.put("language_type", languageType);
+    private void checkResult(RecognitionEntity result) {
+        if (result.getWords_result() == null || result.getWords_result().size() == 0) {
+            throw new AppException("该图片未识别到文字");
         }
-        Map<String, String> headers = new HashMap<>(2);
-        headers.put("Content-Type", "application/x-www-form-urlencoded");
-        HttpClient httpClient = new HttpClientImpl();
-        String result = httpClient.post(imgGeneralBasicApiUrl, param, headers);
-        return new JsonUtil().getCustomObjectMapper().readValue(result, new TypeReference<RecognitionEntity>() {
-        });
     }
 
     private String getAccessTokenInRedis() throws Exception {
@@ -84,29 +88,4 @@ public class RecognitionServiceImpl implements RecognitionService {
         return ret;
     }
 
-    /**
-     * 获取API访问token
-     * 该token有一定的有效期，需要自行管理，当失效时需重新获取.
-     *
-     * @param ak - 百度云官网获取的 API Key
-     * @param sk - 百度云官网获取的 Securet Key
-     * @return assess_token ：
-     */
-    private String getToken(String ak, String sk) throws Exception {
-        log.info("获取百度api Access Token");
-        Map<String, String> param = new HashMap<>(4);
-        param.put("grant_type", "client_credentials");
-        param.put("client_id", ak);
-        param.put("client_secret", sk);
-        try {
-            HttpClient httpClient = new HttpClientImpl();
-            String result = httpClient.get(tokenApiUrl, param);
-            Map<String, String> resMap = new JsonUtil().getCustomObjectMapper().readValue(result, new TypeReference<Map<String, String>>() {
-            });
-            return resMap.get("access_token");
-        } catch (Exception e) {
-            log.error("获取token失败！");
-            throw new Exception("获取token失败！");
-        }
-    }
 }

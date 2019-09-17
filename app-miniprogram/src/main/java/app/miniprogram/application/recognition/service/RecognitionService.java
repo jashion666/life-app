@@ -23,8 +23,10 @@ public interface RecognitionService {
      *
      * @param inputStream  图像流
      * @param languageType 语种（默认中英文混合）
-     * @throws Exception e
      * @return 图片实体类
+     * @throws Exception e
      */
     RecognitionEntity extractText(InputStream inputStream, String languageType) throws Exception;
+
+
 }

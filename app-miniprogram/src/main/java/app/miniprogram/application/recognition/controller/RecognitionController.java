@@ -1,6 +1,7 @@
 package app.miniprogram.application.recognition.controller;
 
 import app.miniprogram.application.recognition.service.RecognitionService;
+import app.miniprogram.security.exception.AppException;
 import app.miniprogram.utils.JsonResult;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shiro.authz.annotation.RequiresAuthentication;
@@ -36,6 +37,8 @@ public class RecognitionController {
             return new ResponseEntity<>(
                     JsonResult.success(recognitionService.extractText(file.getInputStream(), languageType)),
                     HttpStatus.OK);
+        } catch (AppException e) {
+            return new ResponseEntity<>(JsonResult.failed(e.getMessage()), HttpStatus.OK);
         } catch (Exception e) {
             log.error(e.getMessage());
         }
