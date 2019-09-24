@@ -1,5 +1,7 @@
 package com.app.utils.http;
 
+import org.springframework.util.MultiValueMap;
+
 import java.util.Map;
 
 /**
@@ -25,5 +27,13 @@ public interface HttpClientExtension extends HttpClient {
      * @return cookie
      */
     Map<String, String> getCookies(String url);
+
+    /**
+     * RestTemplate 方式发送请求
+     * @param url 地址
+     * @param params 参数
+     * @return 报文
+     */
+    String sendPostByRestTemplate(String url, MultiValueMap<String, String> params);
 
 }

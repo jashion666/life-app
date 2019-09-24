@@ -5,6 +5,7 @@ import app.miniprogram.api.translate.TranslateDTO;
 import app.miniprogram.application.translate.entity.TranslateEntity;
 import app.miniprogram.application.translate.service.TranslateService;
 import app.miniprogram.security.exception.AppException;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
@@ -16,6 +17,7 @@ import java.util.stream.Collectors;
  * @date :2019/9/16.
  */
 @Service
+@Slf4j
 public class TranslateServiceImpl implements TranslateService {
 
     @Value("${translate.api.url}")
@@ -42,9 +44,11 @@ public class TranslateServiceImpl implements TranslateService {
 
     private void checkTranslateResult(TranslateDTO result) {
         if (!StringUtils.isEmpty(result.getError_code())) {
+            log.error(result.toString());
             throw new AppException("翻译失败，请重试");
         }
         if (result.getTrans_result() == null) {
+            log.error(result.toString());
             throw new AppException("翻译失败了--！");
         }
     }

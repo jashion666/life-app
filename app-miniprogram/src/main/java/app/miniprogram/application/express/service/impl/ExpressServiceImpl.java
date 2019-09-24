@@ -64,11 +64,6 @@ public class ExpressServiceImpl implements ExpressService {
             event.setTrajectoryInfo(trajectoryInfo);
             // 设置最后更新年月
             event.setYmd(DateUtil.format(event.getLastUpdateTime(), DateConstants.FORMAT_YMD));
-            // 设置最后更新的文字
-            String lastText = trajectoryInfo.getData().get(0).getContext();
-            event.setValue(lastText.length() > Constants.EXPRESS_MAX_NUMBER
-                    ? lastText.substring(0, Constants.EXPRESS_MAX_NUMBER) + Constants.ELLIPSIS
-                    : lastText);
             event.setImgUrl(cdn + event.getType() + Constants.PNG);
         }
         return resultList;

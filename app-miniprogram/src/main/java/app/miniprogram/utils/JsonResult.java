@@ -63,7 +63,7 @@ public class JsonResult<T> implements Serializable {
     }
 
     @SuppressWarnings("unchecked")
-    public static <T> JsonResult failed() {
+    public static JsonResult failed() {
         JsonResult result = new JsonResult();
         result.setState(ResultCodeEnum.RESULT_FAILED_CODE.getCode());
         result.setResult(null);
@@ -71,7 +71,7 @@ public class JsonResult<T> implements Serializable {
     }
 
     @SuppressWarnings("unchecked")
-    public static <T> JsonResult failed(String message) {
+    public static JsonResult failed(String message) {
         JsonResult result = new JsonResult();
         List<String> msgList = new ArrayList<>();
         msgList.add(message);

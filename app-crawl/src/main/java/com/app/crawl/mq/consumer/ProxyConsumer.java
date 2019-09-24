@@ -139,7 +139,8 @@ public class ProxyConsumer {
      * 重新将ip存入redis
      */
     private void reset(List<ProxyInfo> proxyInfoList) {
-        redisClient.set(HttpEnums.PROXY_KEY.getValue(), proxyInfoList);
+        // 2小时
+        redisClient.set(HttpEnums.PROXY_KEY.getValue(), proxyInfoList, 1200L);
     }
 
 }

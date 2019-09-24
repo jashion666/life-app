@@ -34,10 +34,6 @@ public class ExpressEntity extends ExpressEntityKey {
      */
     private LocalDateTime lastUpdateTime;
     /**
-     * 快递最后一次更新的物流.
-     */
-    private String value;
-    /**
      * 未完成的物流是否有更新.
      */
     private Boolean hasChange;

@@ -1,15 +1,13 @@
 package app.miniprogram.api.translate;
 
-import app.miniprogram.application.recognition.entity.RecognitionEntity;
 import app.miniprogram.security.exception.AppException;
 import app.miniprogram.utils.JsonUtil;
 import com.app.utils.encrypt.EncryptUtil;
-import com.app.utils.http.HttpClient;
-import com.app.utils.http.HttpClientImpl;
+import com.app.utils.http.HttpClientExtension;
+import com.app.utils.http.HttpClientExtensionImpl;
 import com.fasterxml.jackson.core.type.TypeReference;
 
-import java.io.IOException;
-import java.io.UnsupportedEncodingException;
+import java.io.*;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -57,9 +55,10 @@ public class Translate {
 
     private String post(Map<String, String> params) {
         try {
-            HttpClient httpClient = new HttpClientImpl();
+            HttpClientExtension httpClient = new HttpClientExtensionImpl();
             return httpClient.get(transApiHost, params);
         } catch (Exception e) {
+            e.printStackTrace();
             throw new AppException("翻译失败");
         }
     }

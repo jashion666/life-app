@@ -3,7 +3,10 @@ package app.miniprogram.aop;
 import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.annotation.*;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+
+import javax.servlet.http.HttpServletRequest;
 
 /**
  * @author :wkh.
@@ -13,6 +16,9 @@ import org.springframework.stereotype.Component;
 @Component
 @Slf4j
 public class LogAspect {
+
+    @Autowired
+    private HttpServletRequest request;
 
     @Pointcut("execution(* app.miniprogram.application.*.controller.*.*(..))")
     public void pointcut() {
