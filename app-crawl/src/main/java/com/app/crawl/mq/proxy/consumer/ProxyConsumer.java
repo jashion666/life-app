@@ -1,4 +1,4 @@
-package com.app.crawl.mq.consumer;
+package com.app.crawl.mq.proxy.consumer;
 
 import com.app.constant.CommonConstant;
 import com.app.enums.HttpEnums;
@@ -18,6 +18,7 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 
 /**
+ * 爬取代理mq消费者
  * @author :wkh.
  * @date :2019/8/9.
  */

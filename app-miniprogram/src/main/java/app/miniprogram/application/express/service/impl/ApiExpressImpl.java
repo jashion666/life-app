@@ -47,7 +47,7 @@ public class ApiExpressImpl implements Express {
     }
 
     @Override
-    public TrajectoryEntity queryExpress(String postId, String kd100Type) throws Exception {
+    public TrajectoryEntity queryExpress(String postId, String kd100Type, String phone) throws Exception {
 
         log.info("===> api查询");
         // 查询快递类型

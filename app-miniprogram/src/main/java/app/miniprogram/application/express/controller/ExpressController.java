@@ -63,10 +63,11 @@ public class ExpressController {
     @RequestMapping("query")
     public ResponseEntity<JsonResult> queryExpress(@RequestParam("uId") Integer uId,
                                                    @RequestParam("postId") String postId,
-                                                   @RequestParam(value = "type", required = false) String type) {
+                                                   @RequestParam(value = "type", required = false) String type,
+                                                   @RequestParam(value = "phone", required = false) String phone) {
         log.info("参数 uId:" + uId + " postId:" + postId + " type:" + type);
         try {
-            ExpressEntity entity = expressService.getExpressInfo(uId, postId.trim(), type);
+            ExpressEntity entity = expressService.getExpressInfo(uId, postId.trim(), type, phone);
             expressService.saveExpress(entity);
             // 清理不必要数据之后返回给前台
             clearUnnecessaryData(entity);

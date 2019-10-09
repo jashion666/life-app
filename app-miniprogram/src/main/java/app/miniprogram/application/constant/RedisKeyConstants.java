@@ -12,4 +12,8 @@ public class RedisKeyConstants {
      * 百度access token
      */
     public static final String BAIDU_API_ACCESS_TOKEN = "BAIDU_API_ACCESS_TOKEN";
+    /**
+     * 税率
+     */
+    public static final String RATE = "RATE";
 }

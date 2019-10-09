@@ -1,5 +1,7 @@
-package com.app.utils.http;
+package com.app.crawl.mq.proxy.consumer;
 
+import com.app.utils.http.HttpUtils;
+import com.app.utils.http.ProxyInfo;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;

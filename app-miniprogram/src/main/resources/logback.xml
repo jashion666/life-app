@@ -8,6 +8,7 @@
             <!--格式化输出：%d{yyyy-MM-dd HH:mm:ss.SSS} 表示日期，%thread表示线程名，%-5level：级别从左显示5个字符宽度%msg：日志消息，%n是换行符-->
             <!--%green([%replace(%logger{56}){'at|\r\n', ''}] logger{56}打印绿色log {cyan} %L打印行号-->
             <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread][%-5level]%green([%replace(%logger{56}){'at|\r\n', ''}]) - %blue(%msg%n)</pattern>
+            <!--<pattern>%d{yyyy-MM-dd HH:mm:ss,SSS} [%thread][%-5level]%green( %replace(%caller{1}){'\t|Caller.{1}0|\r\n', ''}) - %blue(%m%n)</pattern>-->
         </encoder>
     </appender>
     <!-- 按照每天生成日志文件 -->

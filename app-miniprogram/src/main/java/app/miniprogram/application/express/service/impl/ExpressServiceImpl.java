@@ -70,13 +70,13 @@ public class ExpressServiceImpl implements ExpressService {
     }
 
     @Override
-    public ExpressEntity getExpressInfo(Integer uId, String postId, String type) throws Exception {
+    public ExpressEntity getExpressInfo(Integer uId, String postId, String type, String phone) throws Exception {
 
         // 先从db检索
         ExpressEntity result = getByDb(uId, postId, type);
         // 初次查询
         if (result == null) {
-            result = getByApi(uId, postId, type);
+            result = getByApi(uId, postId, type, phone);
             result.setOperateFlag(Constants.INSERT);
             return result;
         }
@@ -85,7 +85,7 @@ public class ExpressServiceImpl implements ExpressService {
         if (!Constants.EXPRESS_COMPLETE_FLAG.equals(result.getCompleteFlag())) {
             LocalDateTime updateTime = result.getUpdateTime();
             // 更新操作 从api获取
-            result = getByApi(uId, postId, type);
+            result = getByApi(uId, postId, type, phone);
             result.setOperateFlag(Constants.UPDATE);
             result.setUpdateTime(updateTime);
             return result;
@@ -115,15 +115,23 @@ public class ExpressServiceImpl implements ExpressService {
     /**
      * 从api查询物流信息
      */
-    private ExpressEntity getByApi(Integer uId, String postId, String type) throws Exception {
-        TrajectoryEntity trajectoryEntity;
+    private ExpressEntity getByApi(Integer uId, String postId, String type, String phone) throws Exception {
+        TrajectoryEntity trajectoryEntity = new TrajectoryEntity();
         // 先用申请的接口去查询，查询失败再用网关去查
         try {
-            trajectoryEntity = apiExpressImpl.queryExpress(postId, type);
+            trajectoryEntity = apiExpressImpl.queryExpress(postId, type, phone);
         } catch (Exception e) {
-            trajectoryEntity = gateWayExpressImpl.queryExpress(postId, type);
+            // 快递查询api失效
+            trajectoryEntity = gateWayExpressImpl.queryExpress(postId, type, phone);
         }
+
         ExpressEntity result = new ExpressEntity(uId, postId);
+
+        // 需要验证的情况直接返回
+        if (Constants.NEED_CHECK.equals(trajectoryEntity.getNeedCheck())) {
+            result.setNeedCheck(true);
+            return result;
+        }
         result.setTrajectoryInfo(trajectoryEntity);
         // 物流状态
         result.setCompleteFlag(trajectoryEntity.getState());
@@ -138,7 +146,9 @@ public class ExpressServiceImpl implements ExpressService {
 
     @Override
     public void saveExpress(ExpressEntity entity) {
-
+        if (entity.getNeedCheck() != null && entity.getNeedCheck()) {
+            return;
+        }
         if (Constants.INSERT.equals(entity.getOperateFlag())) {
             insert(entity);
             return;

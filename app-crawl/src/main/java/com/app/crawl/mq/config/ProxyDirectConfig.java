@@ -25,8 +25,9 @@ public class ProxyDirectConfig {
     }
 
     @Bean
-    public Binding bindingQueue1(){
+    public Binding bindingQueue1() {
         return BindingBuilder.bind(directQueue1()).to(directExchange()).with("proxy.direct.crawl.routing.key.1");
     }
+
 
 }

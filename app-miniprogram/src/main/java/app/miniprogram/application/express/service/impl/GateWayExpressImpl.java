@@ -4,6 +4,7 @@ import app.miniprogram.application.constant.Constants;
 import app.miniprogram.application.express.entity.ExpressTypeEntity;
 import app.miniprogram.application.express.entity.TrajectoryEntity;
 import app.miniprogram.application.express.service.Express;
+import app.miniprogram.enums.ExpressEnums;
 import app.miniprogram.http.HttpProxyClient;
 import app.miniprogram.utils.JsonUtil;
 import com.app.redis.RedisClient;
@@ -53,14 +54,14 @@ public class GateWayExpressImpl implements Express {
     private ThreadLocal<HttpClientExtension> httpClientExtensionThreadLocal = new ThreadLocal<>();
 
     @Override
-    public TrajectoryEntity queryExpress(String postId, String type) throws Exception {
+    public TrajectoryEntity queryExpress(String postId, String type, String phone) throws Exception {
         // 获取http工具类
         httpClientExtensionThreadLocal.set(httpProxyClient.getHttpProxy());
         try {
             log.info("====> 网关快递查询开始");
-            return doQuery(postId, type);
+            return doQuery(postId, type, phone);
         } catch (Exception e) {
-            return queryAgain(postId, type);
+            return queryAgain(postId, type, phone);
         } finally {
             log.info("<==== 网关快递查询结束");
             httpClientExtensionThreadLocal.remove();
@@ -75,11 +76,16 @@ public class GateWayExpressImpl implements Express {
      * @return 查询结果
      * @throws Exception 异常
      */
-    private TrajectoryEntity doQuery(String postId, String type) throws Exception {
+    private TrajectoryEntity doQuery(String postId, String type, String phone) throws Exception {
+
+        if (StringUtils.isEmpty(type)) {
+            List<ExpressTypeEntity> typeList = expressUtil.getTypeListByKd100(postId);
+            type = typeList.get(0).getComCode();
+        }
         // 如果用户选择了快递类型，不再去查询快递类型
-        TrajectoryEntity result = StringUtils.isEmpty(type) ? queryAndGetType(postId) : queryByWeb(postId, type);
+        TrajectoryEntity result = queryByWeb(postId, type, phone);
         // 校验是否查询成功
-        checkResult(result);
+        checkResult(result, type, phone);
         return result;
     }
 
@@ -91,11 +97,11 @@ public class GateWayExpressImpl implements Express {
      * @return 查询结果
      * @throws Exception 异常
      */
-    private TrajectoryEntity queryAgain(String postId, String type) throws Exception {
+    private TrajectoryEntity queryAgain(String postId, String type, String phone) throws Exception {
         log.info("首次查询失败，清除缓存再次查询");
         redisClient.remove(expressRedisKey);
         try {
-            return doQuery(postId, type);
+            return doQuery(postId, type, phone);
         } catch (Exception ex) {
             httpProxyClient.removeTargetProxy(httpClientExtensionThreadLocal.get().getInUseProxy());
             throw new Exception();
@@ -103,32 +109,24 @@ public class GateWayExpressImpl implements Express {
     }
 
     /**
-     * 执行查询，并且获取快递公司类型集合
-     *
-     * @param postId 快递单号
-     * @return 查询结果
-     */
-    private TrajectoryEntity queryAndGetType(String postId) throws IOException {
-        List<ExpressTypeEntity> typeList = expressUtil.getTypeListByKd100(postId);
-        return queryByWeb(postId, typeList.get(0).getComCode());
-    }
-
-    /**
      * 从web直接查询
      */
-    private TrajectoryEntity queryByWeb(String postId, String type) throws IOException {
+    private TrajectoryEntity queryByWeb(String postId, String type, String phone) throws IOException {
         log.info("执行查询 参数==> postId：" + postId + " type: " + type);
 
         Map<String, String> headers = new HashMap<>(16);
         headers.put("Cookie", expressUtil.getCookie(url));
-        headers.put("Referer", url);
+        headers.put("Referer", "https://www.kuaidi100.com/?from=openv");
         headers.put("User-Agent", apiAgent);
+        headers.put("Host", "www.kuaidi100.com");
+        headers.put("Sec-Fetch-Mode", "cors");
+        headers.put("Sec-Fetch-Site", "same-origin");
 
         Map<String, String> param = new HashMap<>(16);
         param.put("postid", postId);
         param.put("type", type);
         param.put("temp", String.valueOf(Math.random()));
-        param.put("phone", "");
+        param.put("phone", phone);
 
         String ret = httpClientExtensionThreadLocal.get().get(apiUrl, param, headers);
         TrajectoryEntity trajectoryEntity = new JsonUtil().getCustomObjectMapper().readValue(ret, new TypeReference<TrajectoryEntity>() {
@@ -141,15 +139,28 @@ public class GateWayExpressImpl implements Express {
      * 验证查询结果
      *
      * @param result 查询结果
+     * @param type   联系电话
      * @throws Exception 异常
      */
-    private void checkResult(TrajectoryEntity result) throws Exception {
+    private void checkResult(TrajectoryEntity result, String type, String phone) throws Exception {
         if (result == null) {
             throw new Exception("查询失败 返回结果为空");
         }
+
+        // 当手机号为空并且出现该异常时才校验用户手机号
+        boolean needValidation = Constants.HTTP_408.equals(result.getStatus())
+                || (ExpressEnums.SHUNFENG.getCode().equals(type) && "201".equals(result.getStatus()))
+                && StringUtils.isEmpty(phone);
+        if (needValidation) {
+            result.setNeedCheck("1");
+            log.debug("该订单需要用户输入手机号==> " + result);
+            return;
+        }
+
         if (result.getData() == null || result.getData().size() == 0) {
             throw new Exception("查询结果异常，可能需要重新获取cookie 结果==> " + result);
         }
+
         if (!Constants.HTTP_OK.equals(result.getStatus())) {
             throw new Exception("查询结果异常，状态为 结果==> " + result);
         }

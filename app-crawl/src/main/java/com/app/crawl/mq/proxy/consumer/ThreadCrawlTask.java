@@ -1,8 +1,6 @@
-package com.app.crawl.mq.consumer;
+package com.app.crawl.mq.proxy.consumer;
 
-import com.app.utils.http.CloudProxyCrawl;
 import com.app.utils.http.ProxyInfo;
-import com.app.utils.http.XiciProxyCrawl;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.AsyncResult;

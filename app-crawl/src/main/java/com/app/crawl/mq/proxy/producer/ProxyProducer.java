@@ -1,4 +1,4 @@
-package com.app.crawl.mq.producer;
+package com.app.crawl.mq.proxy.producer;
 
 import com.app.utils.http.ProxyInfo;
 import lombok.extern.slf4j.Slf4j;
@@ -9,6 +9,7 @@ import org.springframework.stereotype.Component;
 import java.util.List;
 
 /**
+ * 爬取代理mq提供者
  * @author :wkh.
  * @date :2019/8/9.
  */

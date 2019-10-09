@@ -1,4 +1,6 @@
-package com.app.utils.http;
+package com.app.crawl.mq.proxy.consumer;
+
+import com.app.utils.http.ProxyInfo;
 
 import java.util.ArrayList;
 import java.util.List;

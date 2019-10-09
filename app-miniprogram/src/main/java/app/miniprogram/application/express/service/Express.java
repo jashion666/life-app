@@ -1,10 +1,7 @@
 package app.miniprogram.application.express.service;
 
-import app.miniprogram.application.express.entity.ExpressTypeEntity;
 import app.miniprogram.application.express.entity.TrajectoryEntity;
 
-import java.io.IOException;
-import java.util.List;
 
 /**
  * @author :wkh.
@@ -17,9 +14,10 @@ public interface Express {
      *
      * @param postId 快递单号
      * @param type   快递公司类型
+     * @param phone  电话号码
      * @return 查询结果
      * @throws Exception e
      */
-    TrajectoryEntity queryExpress(String postId, String type) throws Exception;
+    TrajectoryEntity queryExpress(String postId, String type, String phone) throws Exception;
 
 }

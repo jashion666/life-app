@@ -1,7 +1,7 @@
 package com.app.crawl.service.express;
 
 import com.alibaba.dubbo.config.annotation.Service;
-import com.app.crawl.mq.producer.ProxyProducer;
+import com.app.crawl.mq.proxy.producer.ProxyProducer;
 import com.app.service.craw.express.ProxyCrawlService;
 import com.app.utils.http.ProxyInfo;
 import org.springframework.beans.factory.annotation.Autowired;

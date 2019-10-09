@@ -14,7 +14,7 @@ import java.util.List;
 public class TrajectoryEntity {
 
     private String com;
-    private String ischeck;
+    private String needCheck;
     private String condition;
     private String nu;
     private String state;

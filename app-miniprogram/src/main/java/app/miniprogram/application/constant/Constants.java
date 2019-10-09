@@ -11,11 +11,15 @@ public class Constants extends CommonConstant {
      * http返回成功code
      */
     public static final String HTTP_OK = "200";
+    /**
+     * 需要用户验证的code
+     */
+    public static final String HTTP_408 = "408";
 
     /**
-     * 快递返回成功表示
+     * 需要验证标识
      */
-    public static final String EXPRESS_CHECK_OK = "0";
+    public static final String NEED_CHECK = "1";
 
     /**
      * 快递未完成flag
@@ -31,16 +35,6 @@ public class Constants extends CommonConstant {
      * 快递完成flag
      */
     public static final String EXPRESS_COMPLETE_FLAG = "3";
-
-    /**
-     * 查询历史一行最多的文字数.
-     */
-    public static final Integer EXPRESS_MAX_NUMBER = 20;
-    /**
-     * 省略符.
-     */
-    public static final String ELLIPSIS = "...";
-
     /**
      * png.
      */
