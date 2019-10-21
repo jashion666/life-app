@@ -25,3 +25,17 @@ CREATE TABLE `t_express` (
   PRIMARY KEY (`post_id`,`u_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='快递记录';
 
+DROP TABLE IF EXISTS `role`;
+create table if not exists role
+(
+  u_id int not null comment '用户关联id'
+    primary key,
+  menu_id int null comment '用户可使用菜单',
+  menu_name varchar(20) null comment '菜单名字',
+  locked tinyint(1) null comment '用户是否被锁定'
+)
+comment '用户权限表'
+;
+
+
+

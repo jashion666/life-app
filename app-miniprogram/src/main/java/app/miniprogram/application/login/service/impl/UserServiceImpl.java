@@ -22,6 +22,11 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public UserEntity getWithRoles(String openId) {
+        return userEntityMapper.selectWithRole(openId);
+    }
+
+    @Override
     public int save(UserEntity record) {
         return userEntityMapper.insert(record);
     }

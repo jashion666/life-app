@@ -18,6 +18,14 @@ public interface UserService {
     UserEntity getByWxOpenid(String openId);
 
     /**
+     * 检索用户信息并且带有权限
+     *
+     * @param openId openId
+     * @return 用户信息
+     */
+    UserEntity getWithRoles(String openId);
+
+    /**
      * 插入操作
      *
      * @param record openId

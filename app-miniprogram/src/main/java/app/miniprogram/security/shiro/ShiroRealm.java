@@ -1,5 +1,7 @@
 package app.miniprogram.security.shiro;
 
+import app.miniprogram.application.login.entity.UserEntity;
+import app.miniprogram.application.login.service.UserService;
 import app.miniprogram.security.jwt.JwtService;
 import app.miniprogram.security.jwt.JwtToken;
 import lombok.extern.slf4j.Slf4j;
@@ -22,6 +24,9 @@ public class ShiroRealm extends AuthorizingRealm {
     @Autowired
     private JwtService jwtService;
 
+    @Autowired
+    private UserService userService;
+
     @Override
     public boolean supports(AuthenticationToken token) {
         return token instanceof JwtToken;
@@ -32,7 +37,14 @@ public class ShiroRealm extends AuthorizingRealm {
      */
     @Override
     protected AuthorizationInfo doGetAuthorizationInfo(PrincipalCollection principals) {
-        return new SimpleAuthorizationInfo();
+        JwtToken jwtToken = (JwtToken) principals.getPrimaryPrincipal();
+        String wxOpenId = jwtService.getWxOpenIdByToken(jwtToken.getToken());
+        UserEntity info = userService.getWithRoles(wxOpenId);
+
+        SimpleAuthorizationInfo simpleAuthorizationInfo = new SimpleAuthorizationInfo();
+        // TODO 添加验证
+        simpleAuthorizationInfo.addRole("admin");
+        return simpleAuthorizationInfo;
     }
 
     /**

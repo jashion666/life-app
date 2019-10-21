@@ -1,11 +1,13 @@
 package app.miniprogram.application.login.mapper;
 
+import app.miniprogram.application.login.entity.Role;
 import app.miniprogram.application.login.entity.UserEntity;
 import org.apache.ibatis.annotations.*;
 import org.apache.ibatis.type.JdbcType;
 import org.springframework.stereotype.Repository;
 
 import java.util.Date;
+import java.util.List;
 
 @Repository
 public interface UserEntityMapper {
@@ -37,6 +39,21 @@ public interface UserEntityMapper {
             "where open_id = #{openId,jdbcType=VARCHAR}"
     })
     UserEntity selectByOpenId(String openId);
+
+    @Select({
+            "select",
+            "u_id as uId, username, phone, insert_time, update_time",
+            "from t_user",
+            "where open_id = #{openId,jdbcType=VARCHAR}"
+    })
+    @Results({
+            @Result(property = "roleList", column = "uId",
+                    many = @Many(select = "app.miniprogram.application.login.mapper.UserEntityMapper.selectRoleByUserId"))
+    })
+    UserEntity selectWithRole(String openId);
+
+    @Select({"select * from role where u_id = #{uId}"})
+    List<Role> selectRoleByUserId(Long uId);
 
     @UpdateProvider(type = UserEntitySqlProvider.class, method = "updateByPrimaryKeySelective")
     int updateByPrimaryKeySelective(UserEntity record);

@@ -20,6 +20,7 @@ public class ControllerExceptionAdvice {
     @ExceptionHandler(value = Exception.class)
     public ResponseEntity<JsonResult> throwable(Throwable throwable) {
         log.error(throwable.getMessage());
+        throwable.printStackTrace();
         return new ResponseEntity<>(JsonResult.failed("接口请求失败"), HttpStatus.OK);
     }
 

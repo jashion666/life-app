@@ -5,6 +5,7 @@ import app.miniprogram.application.express.service.ExpressService;
 import app.miniprogram.utils.JsonResult;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shiro.authz.annotation.RequiresAuthentication;
+import org.apache.shiro.authz.annotation.RequiresRoles;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -27,6 +28,7 @@ public class ExpressController {
 
     private final ExpressService expressService;
 
+
     @RequestMapping("test")
     public ResponseEntity<JsonResult> test() {
         return new ResponseEntity<>(JsonResult.success("测试接口"), HttpStatus.OK);
@@ -37,6 +39,7 @@ public class ExpressController {
      *
      * @param uId 用户id
      */
+    @RequiresRoles("admin")
     @RequiresAuthentication
     @RequestMapping("history")
     public ResponseEntity<JsonResult> getHistory(@RequestParam("uId") Integer uId) {

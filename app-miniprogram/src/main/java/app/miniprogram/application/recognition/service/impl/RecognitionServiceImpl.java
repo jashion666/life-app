@@ -56,7 +56,7 @@ public class RecognitionServiceImpl implements RecognitionService {
 
         GeneralBasic generalBasic = new GeneralBasic();
 
-        RecognitionEntity result = generalBasic.doExtract(imgBase64Text, languageType, getAccessTokenInRedis(), imgGeneralBasicApiUrl);
+         RecognitionEntity result = generalBasic.doExtract(imgBase64Text, languageType, getAccessTokenInRedis(), imgGeneralBasicApiUrl);
         checkResult(result);
         String wordsResult = result.getWords_result()
                 .stream()

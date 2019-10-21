@@ -2,6 +2,7 @@ package com.app.crawl.service.rate;
 
 import com.alibaba.dubbo.config.annotation.Service;
 import com.app.model.rate.RateDto;
+import com.app.redis.RedisClient;
 import com.app.service.craw.rate.RateCrawlService;
 import lombok.extern.slf4j.Slf4j;
 import org.jsoup.Connection;
@@ -9,6 +10,7 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -23,10 +25,16 @@ import java.util.List;
 @Slf4j
 public class RateCrawlServiceImpl implements RateCrawlService {
 
+    @Autowired
+    private RedisClient redisClient;
+
     @Override
     public List<RateDto> getRateList() throws Exception {
         log.debug("读取税率");
-        return doCrawl();
+        List<RateDto> result = doCrawl();
+        // 20分钟失效
+        redisClient.set("RATE", result, 1200L);
+        return result;
     }
 
     private List<RateDto> doCrawl() throws Exception {

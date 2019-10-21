@@ -3,6 +3,7 @@ package app.miniprogram.application.login.entity;
 import lombok.Data;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 /**
  * @author :wkh
@@ -22,6 +23,8 @@ public class UserEntity {
     private LocalDateTime insertTime;
 
     private LocalDateTime updateTime;
+
+    private List<Role> roleList;
 
     public UserEntity() {
 
