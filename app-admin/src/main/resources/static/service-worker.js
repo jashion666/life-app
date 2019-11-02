@@ -15,7 +15,7 @@ self.addEventListener('install', function (event) {
         })
     );
 });
-
+//  --ignore-certificate-errors --unsafely-treat-insecure-origin-as-secure=https://localhost:8085
 self.addEventListener('fetch', function (event) {
     // Always fetch response from the network
     event.respondWith(
