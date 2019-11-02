@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>検針システム</title>
+    <script src="https://apps.bdimg.com/libs/jquery/2.1.4/jquery.min.js"></script>
+</head>
+<script type="application/javascript">
+    if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.register(
+            'service-worker.js',
+            {scope: './'}
+        ).then(function (serviceWorker) {
+            document.getElementById('status').innerHTML = 'successful';
+        }).catch(function (error) {
+            document.getElementById('status').innerHTML = error;
+        });
+    } else {
+        document.getElementById('status').innerHTML = 'unavailable';
+    }
+</script>
+<body>
+<p>Registration status: <strong id="status"></strong></p>
+
+<div>
+    <table border="1">
+        <tbody id="tData">
+        <tr>
+            <th>番号</th>
+            <th>氏名</th>
+            <th>前回计算值</th>
+            <th>今回计算值</th>
+        </tr>
+        </tbody>
+    </table>
+</div>
+<input type="button" id="aa" value="同步">
+</body>
+
+<script type="application/javascript">
+    $(function () {
+        localStorage.setItem("stor", "1");
+        loadAll();
+    });
+
+    function loadAll() {
+        console.log(localStorage.getItem("stor"));
+        fetch("/test").then(result => {
+            return result.json();
+        }).then(ret => {
+            renderingData(ret);
+        }).catch(e => {
+            console.log(e);
+        })
+    }
+
+    function renderingData(ret) {
+        let tr = $("#tData");
+        ret.forEach(item => {
+            tr.append("<tr>");
+            tr.append("<td>" + item.homeCode + "</td>");
+            tr.append("<td><a href='detail.html?homeCode=" + item.homeCode + "'>" + item.name + "</a></td>");
+            tr.append("<td>" + item.lastTime + "</td>");
+            tr.append("<td>" + item.thisTime + "</td>");
+            tr.append("</tr>");
+        })
+    }
+</script>
+
+</html>

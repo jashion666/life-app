@@ -1,5 +1,6 @@
 package app.miniprogram.application.login.mapper;
 
+import app.miniprogram.application.login.entity.Authority;
 import app.miniprogram.application.login.entity.Role;
 import app.miniprogram.application.login.entity.UserEntity;
 import org.apache.ibatis.annotations.*;
@@ -40,20 +41,45 @@ public interface UserEntityMapper {
     })
     UserEntity selectByOpenId(String openId);
 
+    /**
+     * 查询角色以及menu
+     *
+     * @param openId id
+     * @return 角色信息
+     */
     @Select({
             "select",
-            "u_id as uId, username, phone, insert_time, update_time",
+            "u_id as uId,u_id as rUid, username, phone, insert_time, update_time",
             "from t_user",
             "where open_id = #{openId,jdbcType=VARCHAR}"
     })
     @Results({
-            @Result(property = "roleList", column = "uId",
+            @Result(property = "roleList", column = "rUid",
                     many = @Many(select = "app.miniprogram.application.login.mapper.UserEntityMapper.selectRoleByUserId"))
     })
     UserEntity selectWithRole(String openId);
 
-    @Select({"select * from role where u_id = #{uId}"})
-    List<Role> selectRoleByUserId(Long uId);
+    /**
+     * 查询角色信息
+     *
+     * @param rUid id
+     * @return 角色信息
+     */
+    @Select({"select role_id as roleId,role_id as aRoleId,role_name,locked from role where u_id = #{uId}"})
+    @Results({
+            @Result(property = "authorities" ,column = "aRoleId",
+            many = @Many(select = "app.miniprogram.application.login.mapper.UserEntityMapper.selectAuthorityByUserId"))
+    })
+    List<Role> selectRoleByUserId(Long rUid);
+
+    /**
+     * 查询角色权限
+     *
+     * @param aRoleId id
+     * @return 角色信息
+     */
+    @Select({"select menu_id,menu_name from authority where role_id = #{roleId}"})
+    List<Authority> selectAuthorityByUserId(Long aRoleId);
 
     @UpdateProvider(type = UserEntitySqlProvider.class, method = "updateByPrimaryKeySelective")
     int updateByPrimaryKeySelective(UserEntity record);

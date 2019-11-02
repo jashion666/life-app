@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>検針システム</title>
+    <script src="https://apps.bdimg.com/libs/jquery/2.1.4/jquery.min.js"></script>
+</head>
+<body>
+<!--<p>Registration status: <strong id="status"></strong></p>-->
+
+<div>
+    <table border="1">
+        <tr>
+            <td>番号</td>
+            <td id="homeCode"></td>
+        </tr>
+        <tr>
+            <td>氏名</td>
+            <td id="name"></td>
+        </tr>
+        <tr>
+            <td>前回计算值</td>
+            <td id="lastTime"></td>
+        </tr>
+        <tr>
+            <td>今回计算值</td>
+            <td><input type="text" id="thisTime"></td>
+        </tr>
+    </table>
+</div>
+<a href="index.html" type="button" id="back">返回</a>
+<input type="button" id="save" value="登陆" onclick="save()">
+</body>
+
+<script type="application/javascript">
+    let homeCode;
+    $(function () {
+        homeCode = getQueryVariable("homeCode");
+        search(homeCode);
+    });
+
+    function search(homeCode) {
+
+        fetch("/search", {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({"homeCode": homeCode})
+        }).then(result => {
+            return result.json();
+        }).then(ret => {
+            console.log(ret);
+            if (ret.reload) {
+                for (const item of ret.result) {
+                    if (item.homeCode === homeCode) {
+                        renderingData(item);
+                        return;
+                    }
+
+                }
+            } else {
+                renderingData(ret);
+            }
+        })
+    }
+
+    function renderingData(result) {
+        $("#homeCode").html(result.homeCode);
+        $("#name").html(result.name);
+        $("#lastTime").html(result.lastTime);
+        $("#thisTime").val(result.thisTime);
+    }
+
+    function save() {
+        fetch("/update", {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({"homeCode": homeCode})
+        }).then(result => {
+            return result.json();
+        }).then(ret => {
+            console.log(ret);
+        })
+    }
+
+    function getQueryVariable(variable) {
+        const query = window.location.search.substring(1);
+        const vars = query.split("&");
+        for (let i = 0; i < vars.length; i++) {
+            const pair = vars[i].split("=");
+            if (pair[0] === variable) {
+                return pair[1];
+            }
+        }
+        return (false);
+    }
+</script>
+
+</html>

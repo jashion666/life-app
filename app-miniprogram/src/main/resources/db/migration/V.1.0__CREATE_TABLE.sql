@@ -30,12 +30,22 @@ create table if not exists role
 (
   u_id int not null comment '用户关联id'
     primary key,
-  menu_id int null comment '用户可使用菜单',
-  menu_name varchar(20) null comment '菜单名字',
+  role_id int not null comment '角色id',
+  role_name varchar(20) not null comment '角色名',
   locked tinyint(1) null comment '用户是否被锁定'
 )
-comment '用户权限表'
-;
+comment '用户权限表';
+
+DROP TABLE IF EXISTS `authority`;
+create table if not exists authority
+(
+  role_id int not null
+    primary key,
+  menu_id int null,
+  menu_name varchar(20) null
+)
+comment '权限表';
+
 
 
 

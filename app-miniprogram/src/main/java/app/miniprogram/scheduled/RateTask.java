@@ -1,6 +1,7 @@
 package app.miniprogram.scheduled;
 
 import app.miniprogram.socket.rate.WebSocketRate;
+import cn.hutool.core.date.DateUtil;
 import com.alibaba.dubbo.config.annotation.Reference;
 import com.alibaba.fastjson.JSON;
 import com.app.service.craw.rate.RateCrawlService;
@@ -20,9 +21,9 @@ public class RateTask {
     private RateCrawlService rateCrawLService;
 
     /**
-     * 每30分钟检测一次。
+     * 每20分钟检测一次。
      */
-    @Scheduled(cron = "0 0/30 * * * *")
+    @Scheduled(cron = "0 0/50 * * * *")
     public void send() throws Exception {
         log.debug("定时推送税率信息");
         WebSocketRate.sendAll(JSON.toJSONString(rateCrawLService.getRateList()));

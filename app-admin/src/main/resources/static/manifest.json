@@ -1,0 +1,31 @@
+{
+  "short_name": "蝉知资源站",
+  "name": "蝉知资源站",
+  "icons": [
+    {
+      "src": "chanzhiicon.png",
+      "type": "image/png",
+      "sizes": "48x48"
+    },
+    {
+      "src": "192.png",
+      "type": "image/png",
+      "sizes": "192x192"
+    },
+    {
+      "src": "512.png",
+      "type": "image/png",
+      "sizes": "512x512"
+    },
+    {
+      "src": "144.png",
+      "type": "image/png",
+      "sizes": "144x144"
+    }
+  ],
+  "start_url": "/index.html",
+  "display": "standalone",
+  "background_color": "#2196F3",
+  "orientation": "landscape",
+  "theme_color": "#2196F3"
+}
