@@ -1,26 +1,28 @@
 const version = 1;
 const CACHE_NAME = 'stale-' + version;
-
-const indexUrl = 'index.html';
+let hasSaved = false;
+let savedResult;
 
 self.addEventListener('install', function (event) {
-    self.skipWaiting();
     event.waitUntil(
-        caches.open(CACHE_NAME).then(function (cache) {
-            return cache.addAll([
-                '/',
-                'index.html',
-                'detail.html',
-            ]);
-        })
+        preCache().then(self.skipWaiting())
     );
 });
-//  --ignore-certificate-errors --unsafely-treat-insecure-origin-as-secure=https://localhost:8085
+
+function preCache() {
+    return caches.open(CACHE_NAME).then(function (cache) {
+        return cache.addAll([
+            '/',
+            'index.html',
+            'detail.html',
+        ]);
+    })
+}
+
 self.addEventListener('fetch', function (event) {
-    // Always fetch response from the network
+    const backUpRequest = event.request.clone();
     event.respondWith(
         fetch(event.request).then(function (response) {
-            console.log(event.request.url);
             return caches.open(CACHE_NAME).then(function (cache) {
                 if (response.status >= 500) {
                     return cache.match(event.request).then(function (response) {
@@ -35,36 +37,150 @@ self.addEventListener('fetch', function (event) {
             });
         }).catch(function (error) {
             console.log('Fetch failed. Returning offline page instead.', error);
-            console.log(event.request);
-            console.log("detail.html");
+
+            // 一览查询接口处理
+            if (event.request.url.indexOf("test") > 0) {
+                console.log('一览查询接口处理');
+                let res = getIndexList(caches);
+                return res.then(function (searchResponse) {
+                    putCaches(caches, event.request, searchResponse.clone());
+                    return searchResponse;
+                });
+            }
+            // 详细画面查询接口处理
             if (event.request.url.indexOf("search") > 0) {
+                console.log('详细画面查询接口处理');
                 return getSearchResponse(event.request, caches);
             }
-            return caches.match("detail.html");
-            // return caches.match(event.request).then(function (response) {
-                // if (event.request.url.indexOf("test") > 0) {
-                //     response.clone().json().then(event => {
-                //         localStorage.setItem("testData", JSON.stringify(event));
-                //     })
-                // } else {
-                //     localStorage.removeItem("isTest");
-                //     localStorage.removeItem("testData");
-                // }
-            //     console.log(response);
-            //     return response;
-            // });
+            // 详细画面更新接口处理
+            if (event.request.url.indexOf("update") > 0) {
+                console.log('详细画面更新接口处理');
+                return saveDetail(backUpRequest, caches);
+            }
+            // 单纯html缓存获得
+            const html = getHtml(event.request.url);
+            if (html) {
+                console.log('单纯html缓存获得');
+                return caches.match(html);
+            }
+            // 其他非特定缓存获得
+            return caches.match(event.request).then(function (response) {
+                console.log('其他非特定缓存获得');
+                return response;
+            });
         })
     );
 });
 
+/**
+ * 一览接口处理
+ */
+async function getIndexList(caches) {
+    let result = await getCaches(caches, "test");
+    changeIndexList(result);
+    return createResponse(result);
+}
+
+/**
+ * 单纯html缓存获得
+ */
+function getHtml(url) {
+    if (url.indexOf(".html") > 0) {
+        url = url.substring(url.lastIndexOf("/") + 1);
+        if (url.indexOf("?")) {
+            url = url.substring(0, url.lastIndexOf("?"));
+        }
+        return url;
+    }
+    return null;
+}
+
+/**
+ * 详细画面登录处理
+ */
+async function saveDetail(request) {
+    console.log('保存详细画面的数据');
+    savedResult = await getSaveData(request);
+    hasSaved = true;
+    return createResponse(savedResult);
+}
+
+/**
+ * 详细画面post数据取得
+ */
+function getSaveData(backUpRequest) {
+    return new Promise(resolve => {
+        backUpRequest.json().then(ret => {
+            resolve(ret);
+        });
+    })
+}
+
+/**
+ * 详细画面检索接口处理
+ */
 async function getSearchResponse(request, caches) {
-    const result = await getPersonList(caches);
-    console.log(result);
+    const result = await getCaches(caches, "test");
+    return createResponse({reload: true, result});
+}
+
+/**
+ * 一览画面更改数据
+ */
+function changeIndexList(result) {
+    if (!hasSaved) {
+        return;
+    }
+    for (const item of result) {
+        if (item.homeCode === savedResult.homeCode) {
+            item.name = savedResult.name;
+            item.thisTime = savedResult.thisTime;
+            item.lastTime = savedResult.lastTime;
+            break;
+        }
+    }
+    hasSaved = false;
+    savedResult = {};
+}
+
+/**
+ * 取得缓存
+ */
+function getCaches(caches, key) {
+    return new Promise(resolve => {
+        caches.match(key).then(response => {
+            return response.clone().json();
+        }).then(result => {
+            resolve(result);
+        });
+    })
+}
+
+/**
+ * 存入缓存
+ */
+async function putCaches(caches, key, value) {
+    await doPut(caches, key, value)
+}
+
+/**
+ * 存入缓存
+ */
+function doPut(caches, key, value) {
+    return new Promise(resolve => {
+        caches.open(CACHE_NAME).then(function (cache) {
+            cache.put(key, value);
+            resolve(key);
+        });
+    })
+}
+
+/**
+ * mock 响应数据
+ */
+function createResponse(result) {
     const response = {
-        body: {
-            result,
-            "reload": true,
-        },
+        body: result,
         init: {
             status: 200,
             statusText: 'OK',
@@ -74,54 +190,5 @@ async function getSearchResponse(request, caches) {
             }
         }
     };
-
     return new Response(JSON.stringify(response.body), response.init);
 }
-
-function getPersonList(caches) {
-    return new Promise(resolve => {
-        caches.match("test").then(response => {
-            return response.clone().json();
-        }).then(result => {
-            resolve(result);
-        });
-    })
-}
-
-// self.addEventListener('fetch', function (event) {
-//     // request.mode = navigate isn't supported in all browsers
-//     // so include a check for Accept: text/html header.
-//     if (event.request.mode === 'navigate' ||
-//         (event.request.method === 'GET' &&
-//             event.request.headers.get('accept').includes('text/html'))) {
-//         event.respondWith(
-//             fetch(createCacheBustedRequest(event.request.url)).catch(function (error) {
-//                 // Return the offline page
-//                 console.log('Fetch failed. Returning offline page instead.', error);
-//                 return caches.match(offlineUrl);
-//             })
-//         );
-//     } else {
-//         // Respond with everything else if we can
-//         event.respondWith(caches.match(event.request)
-//             .then(function (response) {
-//                 return response || fetch(event.request);
-//             })
-//         );
-//     }
-// });
-//
-// function createCacheBustedRequest(url) {
-//     const request = new Request(url, {cache: 'reload'});
-//     // See https://fetch.spec.whatwg.org/#concept-request-mode
-//     // This is not yet supported in Chrome as of M48, so we need to explicitly check to see
-//     // if the cache: 'reload' option had any effect.
-//     if ('cache' in request) {
-//         return request;
-//     }
-//
-//     // If {cache: 'reload'} didn't have any effect, append a cache-busting URL parameter instead.
-//     const cacheBustingUrl = new URL(url, self.location.href);
-//     cacheBustingUrl.search += (cacheBustingUrl.search ? '&' : '') + 'cachebust=' + Date.now();
-//     return new Request(cacheBustingUrl);
-// }

@@ -34,6 +34,7 @@
 
 <script type="application/javascript">
     let homeCode;
+    let personModel;
     $(function () {
         homeCode = getQueryVariable("homeCode");
         search(homeCode);
@@ -55,7 +56,6 @@
                         renderingData(item);
                         return;
                     }
-
                 }
             } else {
                 renderingData(ret);
@@ -64,6 +64,7 @@
     }
 
     function renderingData(result) {
+        personModel = result;
         $("#homeCode").html(result.homeCode);
         $("#name").html(result.name);
         $("#lastTime").html(result.lastTime);
@@ -71,14 +72,16 @@
     }
 
     function save() {
+        personModel.thisTime = $("#thisTime").val();
         fetch("/update", {
             method: 'POST',
             headers: {'Content-Type': 'application/json'},
-            body: JSON.stringify({"homeCode": homeCode})
+            body: JSON.stringify(personModel)
         }).then(result => {
             return result.json();
         }).then(ret => {
             console.log(ret);
+            window.location.href = "index.html";
         })
     }
 
@@ -93,6 +96,7 @@
         }
         return (false);
     }
+
 </script>
 
 </html>

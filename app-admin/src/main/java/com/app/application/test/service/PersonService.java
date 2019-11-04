@@ -29,6 +29,12 @@ public class PersonService {
         personMapper.insert(personDto);
     }
 
+    public void updateAll(List<PersonDto> personDtoList) {
+        for (PersonDto personDto : personDtoList) {
+            update(personDto);
+        }
+    }
+
     public void update(PersonDto personDto) {
         personMapper.update(personDto);
     }

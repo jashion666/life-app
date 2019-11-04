@@ -31,20 +31,26 @@ public class PersonController {
     }
 
     @RequestMapping("save")
-    public String save(@RequestBody PersonDto personDto) {
+    public PersonDto save(@RequestBody PersonDto personDto) {
         personService.insert(personDto);
-        return "Save OK";
+        return personDto;
+    }
+
+    @RequestMapping("sync-data")
+    public List<PersonDto> syncData(@RequestBody List<PersonDto> personDtoList) {
+        personService.updateAll(personDtoList);
+        return personDtoList;
     }
 
     @RequestMapping("update")
-    public String update(@RequestBody PersonDto personDto) {
+    public PersonDto update(@RequestBody PersonDto personDto) {
         personService.update(personDto);
-        return "update OK";
+        return personDto;
     }
 
     @RequestMapping("delete")
-    public String delete(@RequestBody PersonDto personDto) {
+    public PersonDto delete(@RequestBody PersonDto personDto) {
         personService.delete(personDto);
-        return "delete OK";
+        return personDto;
     }
 }

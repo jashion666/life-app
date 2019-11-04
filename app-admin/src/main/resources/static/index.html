@@ -10,7 +10,7 @@
         navigator.serviceWorker.register(
             'service-worker.js',
             {scope: './'}
-        ).then(function (serviceWorker) {
+        ).then(function () {
             document.getElementById('status').innerHTML = 'successful';
         }).catch(function (error) {
             document.getElementById('status').innerHTML = error;
@@ -18,6 +18,23 @@
     } else {
         document.getElementById('status').innerHTML = 'unavailable';
     }
+    window.addEventListener('load', function (event) {
+        navigator.serviceWorker.oncontrollerchange = function () {
+            console.log('画面已经被更新');
+        };
+        if (!navigator.onLine) {
+            $("#aa").attr("disabled", true);
+            console.log('网络已断开');
+        }
+        window.addEventListener('offline', function () {
+            console.log('网络已断开');
+            $("#aa").attr("disabled", true);
+        });
+        window.addEventListener('online', function () {
+            $("#aa").attr("disabled", false);
+            console.log('网络已经恢复');
+        })
+    })
 </script>
 <body>
 <p>Registration status: <strong id="status"></strong></p>
@@ -34,17 +51,15 @@
         </tbody>
     </table>
 </div>
-<input type="button" id="aa" value="同步">
+<input type="button" id="aa" value="同步" onclick="syncData()">
 </body>
 
 <script type="application/javascript">
     $(function () {
-        localStorage.setItem("stor", "1");
         loadAll();
     });
 
     function loadAll() {
-        console.log(localStorage.getItem("stor"));
         fetch("/test").then(result => {
             return result.json();
         }).then(ret => {
@@ -63,6 +78,28 @@
             tr.append("<td>" + item.lastTime + "</td>");
             tr.append("<td>" + item.thisTime + "</td>");
             tr.append("</tr>");
+        })
+    }
+
+    function syncData() {
+        caches.open("stale-1").then(function (cache) {
+            cache.match("test").then(response => {
+                return response.clone().json();
+            }).then(result => {
+                console.log(result);
+                fetch("/sync-data", {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify(result)
+                }).then(res => {
+                    return res.json();
+                }).then(ret => {
+                    console.log(ret);
+                    alert("同步成功")
+                }).catch(e => {
+                    console.log(e);
+                })
+            });
         })
     }
 </script>
