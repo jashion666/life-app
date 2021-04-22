@@ -22,7 +22,7 @@
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
         <druid-version>1.1.12</druid-version>
-        <mybatis.version>3.4.6</mybatis.version>
+        <mybatis.version>3.5.6</mybatis.version>
         <fly.way.version>5.2.4</fly.way.version>
         <dubbo.version>2.6.5</dubbo.version>
         <zookeeper.version>3.4.14</zookeeper.version>
